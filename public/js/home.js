@@ -25,11 +25,18 @@ router.get('/', (req, res) => {
     res.render('index');
 });
 
-router.get('/home1', (req, res) => {
+// router.get('/home1', (req, res) => {
+//     if (!req.isAuthenticated()) {
+//         return res.redirect('/');
+//     }
+//     res.render('home1', { user: req.user });
+// });
+
+router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
-    res.render('home1', { user: req.user });
+    res.render('home', { user: req.user });
 });
 
 router.get('/profile', (req, res) => {
@@ -128,7 +135,9 @@ router.post('/login', (req, res, next) => {
             if (loginErr) {
                 return res.status(500).json({ success: false, message: 'Internal server error' });
             }
-            return res.status(200).json({ success: true });
+            // return res.status(200).json({ success: true });
+            // Redirect the user to the home page after successful login
+            return res.redirect('/home');
         });
     })(req, res, next);
 });

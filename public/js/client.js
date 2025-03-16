@@ -215,7 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const errorData = await response.json();
             if (response.ok) {
-                window.location.href = '/home1';
+                // window.location.href = '/home1';
+                window.location.href = '/home';
             } else {
                 const errorMessageHeader = document.getElementById('errorMessageH');
                 const errorMessageBody = document.getElementById('errorMessageB');
@@ -291,7 +292,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         spanElement.style.color = 'red';
                         faqButton.style.display = 'block';
                         enabled = true;
-                        if (window.location.href.includes("home1")) {
+                        // if (window.location.href.includes("home1")) {
+                        if (window.location.href.includes("home")) {
                             const faqModal = new bootstrap.Modal(modalFAQ);
                             faqModal.show();
                         }
@@ -329,7 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = $(this).serialize();
             $.post('/signup', formData, function (data) {
                 if (data.success) {
-                    window.location.href = "/home1";
+                    // window.location.href = "/home1";
+                    window.location.href = "/home";
                 } else if (data.message === "User already exists.") {
                     $('#modalUserExists').modal('show');
                 } else {
