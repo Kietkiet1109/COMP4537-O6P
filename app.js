@@ -1,37 +1,31 @@
 require('dotenv').config();
+
+// Dependencies
 const express = require('express');
-const app = express();
-const session = require("express-session");
+const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const passport = require("passport");
-const port = process.env.PORT || 3000;
-const mongoose = require("mongoose");
-const User = require("./js/user.js");
-const Timer = require('./js/timerSchema.js');
+const Mongoose = require('mongoose');
+const passport = require('passport');
+const bcrypt = require('bcrypt');
+const joi = require('joi');
+
+// Constants
+const port = process.env.PORT || 3001;
+const app = express();
+
+// EJS 
+app.set('view engine', 'ejs');
+const path = require('path');
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use("/js", express.static("./webapp/public/js"));
-app.use("/css", express.static("./webapp/public/css"));
-app.use("/img", express.static("./webapp/public/img"));
-app.use("/scenario", express.static("./scenario"));
+app.use("/js", express.static("./public/js"));
+app.use("/css", express.static("./public/css"));
+app.use("/img", express.static("./public/img"));
 
-
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-}
-
-function ensureAuthNoRed(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.sendStatus(204);
-}
 // Session
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -41,22 +35,23 @@ app.use(session({
     cookie: { maxAge: 3600000 }
 }));
 
-mongoose.connect(process.env.MONGO_URL)
+// Mongoose
+Mongoose.connect(process.env.MONGO_URL)
     .then(async () => {
         console.log("MongoDB connected successfully");
-
     })
     .catch(err => {
         console.error("Failed to connect to MongoDB:", err);
         process.exit(1);
     });
+
 // Passport
 app.use(passport.initialize());
 app.use(passport.session());
-require('./js/passport')(passport);
-
+require('./public/js/passport.js')(passport);
 // Routes
-app.use('/', require('./js/home'));
+app.use('/', require('./public/js/home'));
+
 
 app.post('/logout', (req, res) => {
     req.logout(function (err) {

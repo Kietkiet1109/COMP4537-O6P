@@ -5,8 +5,6 @@ const passport = require("passport");
 const User = require('./user');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const Timer = require('./timerSchema');
-const LEVELUPREQUIREMENT = 100;
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -18,7 +16,7 @@ router.use("/img", express.static("./webapp/public/img"));
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, 
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     }
 });
@@ -31,42 +29,14 @@ router.get('/home1', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
-    let level = 1;
-    let leveledUp = 0;
-    if(req.user.knowledgeAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(req.user.interpersonalAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(req.user.habitAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(leveledUp >= 2){
-        level = 2;
-    }
-    res.render('home1', { user: req.user, level: level });
+    res.render('home1', { user: req.user });
 });
 
 router.get('/profile', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
-    let level = 1;
-    let leveledUp = 0;
-    if(req.user.knowledgeAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(req.user.interpersonalAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(req.user.habitAmount >= LEVELUPREQUIREMENT){
-        leveledUp++;
-    }
-    if(leveledUp >= 2){
-        level = 2;
-    }
-    res.render('profile', { user: req.user, level: level });
+    res.render('profile', { user: req.user });
 });
 
 
@@ -138,11 +108,11 @@ router.post('/reset/:token', async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     user.password = hashedPassword;
-    
+
     user.resetPassword = crypto.randomBytes(20).toString('hex');
     user.resetPasswordDate = undefined;
     await user.save();
-    
+
     res.status(200).json({ success: true, message: "Password has been reset successfully" });
 });
 
@@ -181,14 +151,12 @@ router.post('/signup', async (req, res) => {
             return res.json({ success: false, message: "User already exists." });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ 
-            username, 
-            name, 
-            email, 
-            password: hashedPassword, 
-            numberOfHabits: 0, 
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
             securityQuestion: securityQuestion || null,
-            securityAnswer: securityAnswer ? bcrypt.hashSync(securityAnswer, 10) : null 
+            securityAnswer: securityAnswer ? bcrypt.hashSync(securityAnswer, 10) : null
         });
         await newUser.save();
         req.login(newUser, loginErr => {

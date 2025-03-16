@@ -4,21 +4,6 @@
     background: linear-gradient(to right, #40afc8, #1e6cd2, #2d24d8, #150973);
   }
 
-  /* Remove because cause overflow and does not affect mobile page */
-  /* @media (min-width: 768px) {
-    .gradient-form {
-      height: 100vh !important;
-    }
-  } */
-  
-  /* Also removed because does not appear to do anything */
-  /* @media (min-width: 769px) {
-    .gradient-custom-2 {
-      border-top-right-radius: .3rem;
-      border-bottom-right-radius: .3rem;
-    }
-  } */
-
   /* Curved edge for mobile */
   @media (max-width: 991.98px) {
     .gradient-border {
