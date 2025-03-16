@@ -13,7 +13,7 @@ const User = require('./user');
  */
 module.exports = function (passport) {
     passport.use(new LocalStrategy(
-        { usernameField: 'identifier', passwordField: 'password' }, 
+        { usernameField: 'identifier', passwordField: 'password' },
         async (identifier, password, done) => {
             try {
                 const user = await User.findOne({ $or: [{ username: identifier }, { email: identifier }] });
@@ -30,7 +30,7 @@ module.exports = function (passport) {
             }
         }
     ));
-    
+
 
     passport.serializeUser((user, done) => {
         done(null, user.id);

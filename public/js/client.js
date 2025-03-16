@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const errorData = await response.json();
             if (response.ok) {
-                window.location.href = '/home1';
+                window.location.href = '/home';
             } else {
                 const errorMessageHeader = document.getElementById('errorMessageH');
                 const errorMessageBody = document.getElementById('errorMessageB');
@@ -149,14 +149,18 @@ document.addEventListener('DOMContentLoaded', function () {
         signupForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = $(this).serialize();
+            console.log("Serialized Form Data:", formData);
             $.post('/signup', formData, function (data) {
+                console.log("Server Response:", data);
                 if (data.success) {
-                    window.location.href = "/home1";
+                    window.location.href = "/home";
                 } else if (data.message === "User already exists.") {
                     $('#modalUserExists').modal('show');
                 } else {
                     alert(data.message || 'Signup failed. Please try again.');
                 }
+            }).fail(function (xhr) {
+                console.error("Signup request failed:", xhr.responseText);
             });
         });
     }

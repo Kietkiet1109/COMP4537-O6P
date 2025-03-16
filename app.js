@@ -49,6 +49,7 @@ Mongoose.connect(process.env.MONGO_URL)
 app.use(passport.initialize());
 app.use(passport.session());
 require('./public/js/passport.js')(passport);
+
 // Routes
 app.use('/', require('./public/js/home'));
 

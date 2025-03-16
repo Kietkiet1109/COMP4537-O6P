@@ -6,13 +6,6 @@ const User = require('./user');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
-router.use(express.static('public'));
-router.use("/js", express.static("./webapp/public/js"));
-router.use("/css", express.static("./webapp/public/css"));
-router.use("/img", express.static("./webapp/public/img"));
-
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -25,37 +18,19 @@ router.get('/', (req, res) => {
     res.render('index');
 });
 
-router.get('/home1', (req, res) => {
+router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
-    res.render('home1', { user: req.user });
+    res.render('home', { user: req.user });
 });
-
-router.get('/profile', (req, res) => {
-    if (!req.isAuthenticated()) {
-        return res.redirect('/');
-    }
-    res.render('profile', { user: req.user });
-});
-
 
 router.post('/forgot', async (req, res) => {
-    const { email, securityAnswer } = req.body;
+    const { email } = req.body;
     const user = await User.findOne({ email: email });
 
     if (!user) {
         return res.status(404).json({ success: false, message: "Couldn't find a user with that email!" });
-    }
-
-    if (user.securityQuestion) {
-        if (!securityAnswer) {
-            return res.status(400).json({ success: false, message: "Security answer is required" });
-        }
-        const match = await bcrypt.compare(securityAnswer, user.securityAnswer);
-        if (!match) {
-            return res.status(400).json({ success: false, message: "Incorrect security answer" });
-        }
     }
 
     const resetToken = crypto.randomBytes(20).toString('hex');
@@ -68,7 +43,7 @@ router.post('/forgot', async (req, res) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Password Reset",
-        text: `You (or someone) has requested a password reset for BetterU. To reset the password, please click this link: ${resetURL}.\n\nIf this is not you, please ignore this email and your password will remain unchanged.`
+        text: `You (or someone) has requested a password reset for LEGO Control. To reset the password, please click this link: ${resetURL}.\n\nIf this is not you, please ignore this email and your password will remain unchanged.`
     };
 
     transporter.sendMail(sendEmail, (error, info) => {
@@ -135,13 +110,13 @@ router.post('/login', (req, res, next) => {
 
 
 router.post('/signup', async (req, res) => {
-    const { username, name, email, password, securityQuestion, securityAnswer } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !name || !email || !password) {
+    if (!username || !email || !password) {
         return res.status(400).send('Signup Failed: All fields are required.');
     }
 
-    if (username.trim() === "" || name.trim() === "" || email.trim() === "" || password.trim() === "") {
+    if (username.trim() === "" || email.trim() === "" || password.trim() === "") {
         return res.status(400).send('Signup Failed: All fields must be non-empty strings.');
     }
 
@@ -155,8 +130,6 @@ router.post('/signup', async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            securityQuestion: securityQuestion || null,
-            securityAnswer: securityAnswer ? bcrypt.hashSync(securityAnswer, 10) : null
         });
         await newUser.save();
         req.login(newUser, loginErr => {
@@ -169,21 +142,5 @@ router.post('/signup', async (req, res) => {
         return res.json({ success: false, message: "Internal server error" });
     }
 });
-
-router.post('/getSecurityQuestion', async (req, res) => {
-    const { email } = req.body;
-    const user = await User.findOne({ email: email });
-
-    if (!user) {
-        return res.status(404).json({ success: false, message: "Couldn't find a user with that email!" });
-    }
-
-    if (user.securityQuestion) {
-        return res.json({ success: true, question: user.securityQuestion });
-    } else {
-        return res.status(400).json({ success: true, message: "No security question set for this user." });
-    }
-});
-
 
 module.exports = router;
