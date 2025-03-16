@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let enterEmailModalInstance;
     let successModalInstance;
     let loginFailedModalInstance;
-    let enteredEmail = '';
 
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
     const enterEmailForm = document.getElementById('enter-email-form');
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             const email = document.getElementById('enter-email').value;
             if (email) {
-                enteredEmail = email;  // Store the entered email
                 fetch('/forgot', {
                     method: 'POST',
                     headers: {
@@ -149,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
         signupForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = $(this).serialize();
-            console.log("Serialized Form Data:", formData);
             $.post('/signup', formData, function (data) {
                 console.log("Server Response:", data);
                 if (data.success) {

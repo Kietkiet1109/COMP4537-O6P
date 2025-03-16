@@ -53,7 +53,6 @@ require('./public/js/passport.js')(passport);
 // Routes
 app.use('/', require('./public/js/home'));
 
-
 app.post('/logout', (req, res) => {
     req.logout(function (err) {
         if (err) { return next(err); }
