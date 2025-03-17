@@ -7,13 +7,11 @@ router.get('/', (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).send('Access Denied'); // Restrict access to admins only
     }
-    console.log("User:" + req.user.username)
-    console.log("Admin:" + req.user.isAdmin)
-    res.render('admin', { 
-        username: req.user.username, 
+    res.render('admin', {
+        username: req.user.username,
         isAdmin: req.user.isAdmin, // Pass isAdmin to the admin.ejs template
-        searchResult: null, 
-        searchAttempted: false 
+        searchResult: null,
+        searchAttempted: false
     });
 });
 
