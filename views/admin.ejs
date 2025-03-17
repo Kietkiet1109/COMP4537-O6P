@@ -1,0 +1,20 @@
+<%- include("template/header-logged-in", { isAdmin }) %>
+    <div class="container">
+        <div class="search-container">
+            <form id="searchForm" action="/admin/search" method="GET" class="d-flex">
+                <input type="text" name="username" class="form-control search-bar" placeholder="Search for a username..." required>
+                <button type="submit" class="btn btn-primary ms-2">Search</button>
+            </form>
+        </div>
+        <div id="searchResults" class="mt-4 text-center">
+            <% if (searchResult) { %>
+                <h3>Search Result:</h3>
+                <p>Username: <%= searchResult.username %></p>
+                <p>Email: <%= searchResult.email %></p>
+                <p>Admin Status: <%= searchResult.isAdmin ? "Yes" : "No" %></p>
+            <% } else if (searchAttempted) { %>
+                <p>No user found with the entered username.</p>
+            <% } %>
+        </div>
+    </div>
+<%- include("template/footer") %>

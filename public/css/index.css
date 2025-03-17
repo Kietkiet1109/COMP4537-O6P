@@ -9,6 +9,10 @@
   padding-left: 15px; /* Adjust left padding for Home button */
 }
 
+.navbar a[href="/admin"] {
+  padding-right: 15px; /* Adjust right padding for Logout button */
+}
+
 .navbar a[href="/"] {
   margin-left: auto; /* Push the Logout button to the right */
   padding-right: 15px; /* Adjust right padding for Logout button */
