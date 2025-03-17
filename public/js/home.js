@@ -18,20 +18,61 @@ router.get('/', (req, res) => {
     res.render('index');
 });
 
-// router.get('/home', (req, res) => {
-//     if (!req.isAuthenticated()) {
-//         return res.redirect('/');
-//     }
-//     res.render('home', { user: req.user });
-// });
 
 router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
 
-    const greeting = req.user.isAdmin ? `Admin ${req.user.username}` : req.user.username; // Add "Admin" if the user is an admin
-    res.render('home', { greeting }); // Pass the greeting message to the frontend
+    res.render('home', {
+        username: req.user.username, // Send the username
+        isAdmin: req.user.isAdmin   // Send the isAdmin flag
+    });
+});
+
+// Admin Panel Route
+router.get('/admin', (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+        return res.status(403).send('Access Denied');
+    }
+    res.render('admin', { 
+        username: req.user.username, 
+        isAdmin: req.user.isAdmin, 
+        searchResult: null, 
+        searchAttempted: false 
+    });
+});
+
+
+// Admin Search Route
+router.get('/admin/search', async (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+        return res.status(403).send('Access Denied');
+    }
+
+    const { username } = req.query;
+
+    try {
+        const user = await User.findOne({ username: username.trim() }); // Search for user in the database
+        if (user) {
+            res.render('admin', {
+                username: req.user.username,
+                isAdmin: req.user.isAdmin,
+                searchResult: user,
+                searchAttempted: true
+            });
+        } else {
+            res.render('admin', {
+                username: req.user.username,
+                isAdmin: req.user.isAdmin,
+                searchResult: null,
+                searchAttempted: true
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 router.post('/forgot', async (req, res) => {
