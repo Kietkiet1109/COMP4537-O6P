@@ -1,14 +1,17 @@
 import os
+import sys
 import json
 import torch
 import librosa
+import warnings
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Set device and torch dtype
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+
+# print(torch.cuda.get_device_name(), file=sys.stderr)
 
 # Load model and processor
 model_id = "openai/whisper-large-v3"
@@ -26,49 +29,52 @@ pipe = pipeline(
     feature_extractor=processor.feature_extractor,
     torch_dtype=torch_dtype,
     device=device,
+    generate_kwargs={"task": "transcribe", "language": "en", "forced_decoder_ids": None}
 )
 
-## Function to transcribe audio file
 def transcribe_audio(audio_path):
-    # Load audio file
-    audio, sr = librosa.load(audio_path, sr=None)
+    """
+    Transcribes an audio file and returns the transcription as a JSON object.
 
-    # Use the pipeline to transcribe the audio
-    result = pipe(audio)
+    Args:
+        audio_path (str): Path to the audio file.
 
-    # Create a JSON response with the transcription result
-    transcription = {
-        "text": result['text']
-    }
+    Returns:
+        dict: Transcription result in JSON format or None in case of an error.
+    """
+    try:
+        # Ensure the file exists
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"Audio file not found: {audio_path}")
 
-    return transcription
+        # Load the audio file
+        audio, sr = librosa.load(audio_path, sr=None)
 
+        # Perform transcription using the pipeline
+        result = pipe(audio)
+        return {"text": result['text']}
+    except Exception as ex:
+        print(json.dumps({"error": str(ex)}), file=sys.stderr)
+        return None
 
-# File system event handler for new audio files
-class AudioFileHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if event.is_directory:
-            return
-        # Only process .mp3 and .webm files
-        if event.src_path.endswith(('.mp3', '.webm')):
-            transcription = transcribe_audio(event.src_path)
+if __name__ == "__main__":
+    try:
+        # Get the audio file path from command-line arguments
+        if len(sys.argv) < 2:
+            raise ValueError("No audio file path provided. Usage: python model.py <audio_path>")
 
-            # Output the transcription as JSON
-            json.dumps(transcription, indent=4)
+        audio_path = sys.argv[1]
 
+        # Transcribe the audio file
+        transcription = transcribe_audio(audio_path)
+        
+        # Output the transcription in JSON format
+        if transcription:
+            print(json.dumps(transcription))  # Outputs transcription to stdout for Node.js to read
+        else:
+            sys.exit(1)  # Exit with an error code if transcription failed
 
-# Set up observer to monitor the folder for new files
-upload_folder = '../uploads'
-event_handler = AudioFileHandler()
-observer = Observer()
-observer.schedule(event_handler, path=upload_folder, recursive=False)
-
-# Start monitoring the folder
-observer.start()
-
-try:
-    while True:
-        pass  # Keep the script running
-except KeyboardInterrupt:
-    observer.stop()
-observer.join()
+    except Exception as main_ex:
+        # Handle any unexpected errors
+        print(json.dumps({"error": str(main_ex)}), file=sys.stderr)
+        sys.exit(1)
