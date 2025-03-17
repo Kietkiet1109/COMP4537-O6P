@@ -5,6 +5,33 @@
   justify-content: center;
 }
 
+.navbar .navbar-brand {
+  padding-left: 15px; /* Adjust left padding for Home button */
+}
+
+.navbar a[href="/"] {
+  margin-left: auto; /* Push the Logout button to the right */
+  padding-right: 15px; /* Adjust right padding for Logout button */
+}
+
+.playback-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#audioPlayback {
+  width: 100%; /* Make it fit the container width */
+  max-width: 300px; /* Limit the maximum size */
+  height: 40px; /* Adjust height if needed */
+  border-radius: 10px; /* Add rounded corners */
+  border: 1px solid #ccc; /* Optional: Add a subtle border */
+  background-color: #f8f9fa; /* Match the design theme */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+  margin: 10px auto; /* Center it horizontally */
+}
+
 /* Curved edge for mobile */
 @media (max-width: 991.98px) {
   .gradient-border {
