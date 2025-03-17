@@ -1,13 +1,6 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
 import torch
 import librosa
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-import uvicorn
-from io import BytesIO
-
-# FastAPI app setup
-app = FastAPI()
 
 # Set device and torch dtype
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -31,17 +24,12 @@ pipe = pipeline(
     device=device,
 )
 
-# Update with the audio send from server API
-@app.post("/transcribe")
-async def transcribe_audio(file: UploadFile = File(...)):
-    # Load audio file from API request
-    audio_bytes = await file.read()
-    audio_stream = BytesIO(audio_bytes)
-    audio, sr = librosa.load(audio_stream, sr=16000)
+# Load audio file
+audio_path = r'C:/Users/KietV/Downloads/Voice 001.mp3'
+audio, sr = librosa.load(audio_path, sr=None)
 
-    # Transcribe the audio
-    result = pipe({"array": audio, "sampling_rate": sr}, return_timestamps=True)
-    return JSONResponse(content={"text": result["text"]})
+# Use the pipeline to transcribe the audio
+result = pipe(audio)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# Print the transcription result
+print(result['text'])
