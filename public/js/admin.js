@@ -17,6 +17,19 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/admin', (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+        return res.status(403).send('Access Denied'); // Restrict access to admins only
+    }
+
+    res.render('admin', { 
+        username: req.user.username, 
+        isAdmin: req.user.isAdmin, 
+        searchResult: null, // Initialize as null since no search has been performed yet
+        searchAttempted: false // Indicates no search has been attempted
+    });
+});
+
 // Admin Search Route
 router.get('/search', async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
@@ -26,11 +39,21 @@ router.get('/search', async (req, res) => {
     const { username } = req.query;
 
     try {
-        const user = await User.findOne({ username: username.trim() }); // Search for a user in the database
+        const user = await User.findOne({ username: username.trim() }); // Search for user in the database
         if (user) {
-            res.render('admin', { searchResult: user, searchAttempted: true });
+            res.render('admin', { 
+                username: req.user.username, 
+                isAdmin: req.user.isAdmin, 
+                searchResult: user, 
+                searchAttempted: true 
+            });
         } else {
-            res.render('admin', { searchResult: null, searchAttempted: true });
+            res.render('admin', { 
+                username: req.user.username, 
+                isAdmin: req.user.isAdmin, 
+                searchResult: null, 
+                searchAttempted: true 
+            });
         }
     } catch (err) {
         console.error(err);

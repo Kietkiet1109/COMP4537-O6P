@@ -29,13 +29,7 @@ router.get('/home', (req, res) => {
     });
 });
 
-router.get('/admin', (req, res) => {
-    if (!req.isAuthenticated() || !req.user.isAdmin) {
-        return res.status(403).send('Access Denied'); // Deny access if not an admin
-    }
 
-    res.render('admin', { username: req.user.username }); // Render the admin page
-});
 
 router.post('/forgot', async (req, res) => {
     const { email } = req.body;
