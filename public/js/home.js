@@ -18,11 +18,20 @@ router.get('/', (req, res) => {
     res.render('index');
 });
 
+// router.get('/home', (req, res) => {
+//     if (!req.isAuthenticated()) {
+//         return res.redirect('/');
+//     }
+//     res.render('home', { user: req.user });
+// });
+
 router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
-    res.render('home', { user: req.user });
+
+    const greeting = req.user.isAdmin ? `Admin ${req.user.username}` : req.user.username; // Add "Admin" if the user is an admin
+    res.render('home', { greeting }); // Pass the greeting message to the frontend
 });
 
 router.post('/forgot', async (req, res) => {
@@ -130,6 +139,7 @@ router.post('/signup', async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            isAdmin: false,
         });
         await newUser.save();
         req.login(newUser, loginErr => {
