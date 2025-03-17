@@ -4,6 +4,49 @@
   display: flex;
   justify-content: center;
 }
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.admin-search-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.admin-search-bar {
+  width: 60%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+.admin-search-button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.admin-search-button:hover {
+  background-color: #0056b3;
+}
+
+/* Admin Results Section */
+.admin-results-container {
+  margin-top: 40px;
+}
+
+.admin-result-card {
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-no-result {
+  color: #ff4d4d;
+  font-size: 16px;
+}
 
 .navbar .navbar-brand {
   padding-left: 15px; /* Adjust left padding for Home button */

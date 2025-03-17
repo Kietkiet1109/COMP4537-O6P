@@ -14,9 +14,9 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-// router.get('/', (req, res) => {
-//     res.render('index');
-// });
+router.get('/', (req, res) => {
+    res.render('index');
+});
 
 router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
@@ -32,13 +32,11 @@ router.get('/home', (req, res) => {
 // Admin Panel Route
 router.get('/admin', (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
-        return res.status(403).send('Access Denied'); // Restrict access to admins only
+        return res.status(403).send('Access Denied');
     }
-    console.log("User:", req.user.username);
-    console.log("Admin:", req.user.isAdmin);
     res.render('admin', { 
         username: req.user.username, 
-        isAdmin: req.user.isAdmin, // Pass isAdmin to the admin.ejs template
+        isAdmin: req.user.isAdmin, 
         searchResult: null, 
         searchAttempted: false 
     });
@@ -46,7 +44,7 @@ router.get('/admin', (req, res) => {
 
 
 // Admin Search Route
-router.get('/search', async (req, res) => {
+router.get('/admin/search', async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).send('Access Denied');
     }

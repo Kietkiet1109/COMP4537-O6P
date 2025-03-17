@@ -1,20 +1,38 @@
 <%- include("template/header-logged-in", { isAdmin }) %>
-    <div class="container">
-        <div class="search-container">
-            <form id="searchForm" action="/admin/search" method="GET" class="d-flex">
-                <input type="text" name="username" class="form-control search-bar" placeholder="Search for a username..." required>
-                <button type="submit" class="btn btn-primary ms-2">Search</button>
-            </form>
-        </div>
-        <div id="searchResults" class="mt-4 text-center">
-            <% if (searchResult) { %>
-                <h3>Search Result:</h3>
-                <p>Username: <%= searchResult.username %></p>
-                <p>Email: <%= searchResult.email %></p>
-                <p>Admin Status: <%= searchResult.isAdmin ? "Yes" : "No" %></p>
-            <% } else if (searchAttempted) { %>
-                <p>No user found with the entered username.</p>
-            <% } %>
-        </div>
+<div class="admin-container">
+    <!-- Search Section -->
+    <div class="admin-search-container">
+        <form id="admin-search-form" action="/admin/search" method="GET" class="admin-search-form d-flex">
+            <input type="text" name="username" class="form-control admin-search-bar" placeholder="Search for a username..." required>
+            <button type="submit" class="btn btn-primary admin-search-button ms-2">Search</button>
+        </form>
     </div>
+
+    <!-- Results Section -->
+    <% if (searchAttempted) { %> <!-- Render only if searchAttempted is true -->
+        <div class="admin-results-container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card admin-result-card bg-dark text-white">
+                        <div class="card-body">
+                            <div class="admin-result-template text-center">
+                                <% if (searchResult) { %>
+                                    <h3>Search Result:</h3>
+                                    <p>Username: <%= searchResult.username %></p>
+                                    <p>Email: <%= searchResult.email %></p>
+                                    <p>Admin Status: <%= searchResult.isAdmin ? "Yes" : "No" %></p>
+                                <% } else { %>
+                                    <div class="admin-no-result">
+                                        <p>No user found with the entered username.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
 <%- include("template/footer") %>
