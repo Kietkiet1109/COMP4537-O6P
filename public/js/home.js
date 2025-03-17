@@ -18,12 +18,13 @@ router.get('/', (req, res) => {
     res.render('index');
 });
 
+
 router.get('/home', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/');
     }
 
-    res.render('home', { 
+    res.render('home', {
         username: req.user.username, // Send the username
         isAdmin: req.user.isAdmin   // Send the isAdmin flag
     });
@@ -54,18 +55,18 @@ router.get('/admin/search', async (req, res) => {
     try {
         const user = await User.findOne({ username: username.trim() }); // Search for user in the database
         if (user) {
-            res.render('admin', { 
-                username: req.user.username, 
-                isAdmin: req.user.isAdmin, 
-                searchResult: user, 
-                searchAttempted: true 
+            res.render('admin', {
+                username: req.user.username,
+                isAdmin: req.user.isAdmin,
+                searchResult: user,
+                searchAttempted: true
             });
         } else {
-            res.render('admin', { 
-                username: req.user.username, 
-                isAdmin: req.user.isAdmin, 
-                searchResult: null, 
-                searchAttempted: true 
+            res.render('admin', {
+                username: req.user.username,
+                isAdmin: req.user.isAdmin,
+                searchResult: null,
+                searchAttempted: true
             });
         }
     } catch (err) {

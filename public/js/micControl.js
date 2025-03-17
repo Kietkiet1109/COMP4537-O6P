@@ -133,8 +133,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (recordButton) {
         recordButton.addEventListener("click", async function () {
-            console.log("Record button clicked.");
-
             try {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     alert("Your browser does not support audio recording.");
@@ -142,22 +140,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
                 if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                    console.log("Starting recording...");
-
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    console.log("Microphone access granted.");
 
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
 
                     mediaRecorder.ondataavailable = event => {
-                        console.log("Audio chunk received.");
                         audioChunks.push(event.data);
                     };
 
                     mediaRecorder.onstop = async () => {
-                        console.log("Recording stopped. Converting to MP3...");
-
                         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
                         const audioUrl = URL.createObjectURL(audioBlob);
 
@@ -176,13 +168,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                         // Play MP3 audio
                         const audioPlayback = document.getElementById("audioPlayback");
                         if (audioPlayback) {
-                            console.log("MP3 audio ready for playback:", mp3Url);
                             audioPlayback.src = mp3Url;
                             audioPlayback.style.display = "block";
                         }
 
                         // Upload MP3 to the server
-                        console.log("Uploading MP3 to the server...");
                         const formData = new FormData();
                         formData.append("audioFile", mp3Blob, "recording.mp3");
 

@@ -1,36 +1,37 @@
 <%- include("template/header-logged-in", { isAdmin }) %>
     <!-- 404 Page. Used copilot for template -->
     <div class="container mt-5">
-        <!-- Search Section -->
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <form id="searchForm" action="/admin/search" method="GET" class="d-flex justify-content-center">
-                    <input type="text" name="username" class="form-control w-50" placeholder="Search for a username..." required>
-                    <button type="submit" class="btn btn-primary ms-2">Search</button>
-                </form>
-            </div>
-        </div>
-    
-        <!-- Results Section -->
-        <% if (searchAttempted) { %>
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-8">
-                    <% if (searchResult) { %>
-                        <div class="card bg-dark text-white">
-                            <div class="card-body">
-                                <h3 class="card-title text-center">Search Result</h3>
-                                <p class="card-text">Username: <%= searchResult.username %></p>
-                                <p class="card-text">Email: <%= searchResult.email %></p>
-                                <p class="card-text">Admin Status: <%= searchResult.isAdmin ? "Yes" : "No" %></p>
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <div class="error-template text-center">
+                            <!-- <img src="/img/404.gif" alt="404 Error" class="img-fluid">
+                            <h1 class="display-1">Good!</h1>
+                            <h2 class="display-4">Home Page Test</h2> -->
+                            <div>
+                                <h1>
+                                    Welcome, 
+                                    <% if (isAdmin) { %> 
+                                        Admin 
+                                    <% } %> 
+                                    <%= username %>!
+                                </h1>
+                            </div>
+                            <h1>Welcome to Lego Control!</h1>
+                            <p>Press the button below to start and stop recording.</p>
+
+                            <div class="d-flex justify-content-center">
+                                <button id="recordButton" class="btn btn-primary btn-lg">Start Recording</button>
+                            </div>
+
+                            <div class="playback-container">
+                                <audio id="audioPlayback" controls style="display: none; margin-top: 20px;"></audio>
                             </div>
                         </div>
-                    <% } else { %>
-                        <div class="alert alert-danger text-center" role="alert">
-                            No user found with the entered username.
-                        </div>
-                    <% } %>
+                    </div>
                 </div>
             </div>
-        <% } %>
+        </div>
     </div>
     <%- include("template/footer") %>
