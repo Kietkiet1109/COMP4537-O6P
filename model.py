@@ -1,3 +1,7 @@
+import os
+import http.server
+import socketserver
+from http import HTTPStatus
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 import torch
@@ -5,6 +9,8 @@ import librosa
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import uvicorn
 from io import BytesIO
+from fastapi.middleware.wsgi import WSGIMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 # FastAPI app setup
 app = FastAPI()
@@ -43,5 +49,29 @@ async def transcribe_audio(file: UploadFile = File(...)):
     result = pipe({"array": audio, "sampling_rate": sr}, return_timestamps=True)
     return JSONResponse(content={"text": result["text"]})
 
+# Custom HTTP Server Handler to use FastAPI with http.server
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        # Simple response for GET requests
+        self.send_response(HTTPStatus.OK)
+        self.end_headers()
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv('PORT', 80))
+
+    # Create the HTTP server, with FastAPI as the application
+    httpd = socketserver.TCPServer(('', port), Handler)
+
+    # Start FastAPI app as an ASGI application in the background
+    from fastapi import FastAPI
+    from uvicorn import Config, Server
+
+    config = Config(app, host="0.0.0.0", port=8000)
+    server = Server(config=config)
+
+    # Run both custom HTTP server and FastAPI server
+    try:
+        # Start the FastAPI application in a separate thread or process
+        server.run()
+    except Exception as e:
+        print(f"Error running server: {e}")
