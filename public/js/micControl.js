@@ -79,9 +79,27 @@ document.addEventListener("DOMContentLoaded", function ()
 
         try
         {
+            // Check if getUserMedia is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+            {
+                alert("Your browser does not support audio recording. Please try using a modern browser like Chrome or Firefox.");
+                return;
+            }
+
             if (!mediaRecorder || mediaRecorder.state === "inactive")
             {
                 console.log("Starting recording..."); // Debugging
+
+                // Request microphone access
+                const permissionStatus = await navigator.permissions.query({ name: "microphone" });
+                if (permissionStatus.state === "denied")
+                {
+                    alert("Microphone access is denied. Please enable it in your browser settings.");
+                    return;
+                } else if (permissionStatus.state === "prompt")
+                {
+                    alert("The browser will now ask for microphone access. Please grant permission.");
+                }
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 console.log("Microphone access granted."); // Debugging
@@ -157,6 +175,8 @@ document.addEventListener("DOMContentLoaded", function ()
         } catch (err)
         {
             console.error("Error during recording:", err); // Debugging
+            alert("An error occurred. Please check your microphone permissions and try again.");
         }
     });
 });
+
