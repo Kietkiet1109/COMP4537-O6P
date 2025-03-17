@@ -1,13 +1,10 @@
+import os
+import json
 import torch
 import librosa
-import uvicorn
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-from io import BytesIO
-
-# FastAPI app setup
-app = FastAPI()
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 # Set device and torch dtype
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -31,20 +28,47 @@ pipe = pipeline(
     device=device,
 )
 
-# API endpoint to transcribe the audio
-@app.post("/transcribe")
-async def transcribe_audio(file: UploadFile = File(...)):
-    # Load audio file from API request
-    audio_bytes = await file.read()
-    audio_stream = BytesIO(audio_bytes)
-    audio, sr = librosa.load(audio_stream, sr=None)
+## Function to transcribe audio file
+def transcribe_audio(audio_path):
+    # Load audio file
+    audio, sr = librosa.load(audio_path, sr=None)
 
     # Use the pipeline to transcribe the audio
     result = pipe(audio)
 
-    # Return the transcription text in the response
-    return JSONResponse(content={"text": result['text']})
+    # Create a JSON response with the transcription result
+    transcription = {
+        "text": result['text']
+    }
 
-# Run the app using Uvicorn
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    return transcription
+
+
+# File system event handler for new audio files
+class AudioFileHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if event.is_directory:
+            return
+        # Only process .mp3 and .webm files
+        if event.src_path.endswith(('.mp3', '.webm')):
+            transcription = transcribe_audio(event.src_path)
+
+            # Output the transcription as JSON
+            json.dumps(transcription, indent=4)
+
+
+# Set up observer to monitor the folder for new files
+upload_folder = '../uploads'
+event_handler = AudioFileHandler()
+observer = Observer()
+observer.schedule(event_handler, path=upload_folder, recursive=False)
+
+# Start monitoring the folder
+observer.start()
+
+try:
+    while True:
+        pass  # Keep the script running
+except KeyboardInterrupt:
+    observer.stop()
+observer.join()
