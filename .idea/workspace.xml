@@ -78,7 +78,7 @@
       <workItem from="1742158372268" duration="4256000" />
       <workItem from="1742167878308" duration="64000" />
       <workItem from="1742168169090" duration="459000" />
-      <workItem from="1742169411194" duration="4707000" />
+      <workItem from="1742169411194" duration="7125000" />
     </task>
     <servers />
   </component>
@@ -90,6 +90,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Model changing" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Project$model.coverage" NAME="model Coverage Results" MODIFIED="1742098984289" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Project$model.coverage" NAME="model Coverage Results" MODIFIED="1742178326219" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
