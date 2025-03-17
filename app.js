@@ -18,6 +18,13 @@ app.set('view engine', 'ejs');
 const path = require('path');
 app.set('views', path.join(__dirname, 'views'));
 
+// Needed to add this for the mp3 change using ffmpeg
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
