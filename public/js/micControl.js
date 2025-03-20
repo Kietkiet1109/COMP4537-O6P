@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             if (response.ok) {
                                 const result = await response.json();
-                                console.log("Server Response:", result);
+                                document.getElementById("result").innerHTML = `Command: ${result.transcription}`;
                                 alert("MP3 uploaded successfully!");
                             } else {
                                 console.error("Failed to upload MP3:", response.status, response.statusText);
