@@ -26,22 +26,11 @@ router.get('/home', (req, res) => {
 
     res.render('home', {
         username: req.user.username, // Send the username
-        isAdmin: req.user.isAdmin   // Send the isAdmin flag
+        isAdmin: req.user.isAdmin,   // Send the isAdmin flag
     });
 });
 
 // Admin Panel Route
-// router.get('/admin', (req, res) => {
-//     if (!req.isAuthenticated() || !req.user.isAdmin) {
-//         return res.status(403).send('Access Denied');
-//     }
-//     res.render('admin', { 
-//         username: req.user.username, 
-//         isAdmin: req.user.isAdmin, 
-//         searchResult: null, 
-//         searchAttempted: false 
-//     });
-// });
 router.get('/admin', async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).send('Access Denied');
@@ -52,6 +41,7 @@ router.get('/admin', async (req, res) => {
     let users = await User.find(); // Get all users if no search query
     let searchResult = null;
     let searchAttempted = false;
+    let apiCallsLeft = req.user.apiCallsLeft;
     try {
 
         if (username) {
@@ -65,7 +55,8 @@ router.get('/admin', async (req, res) => {
             isAdmin: req.user.isAdmin, 
             users: users, // Ensure users is passed here
             searchResult: searchResult || null, // Ensure searchResult is always defined
-            searchAttempted: searchAttempted
+            searchAttempted: searchAttempted,
+            apiCallsLeft: apiCallsLeft,
         });
     } catch (err) {
         console.error("Database error:", err);
@@ -315,6 +306,7 @@ router.post('/signup', async (req, res) => {
             email,
             password: hashedPassword,
             isAdmin: false,
+            apiCallsLeft: 20,
         });
         await newUser.save();
         req.login(newUser, loginErr => {

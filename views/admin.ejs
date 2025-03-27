@@ -16,6 +16,7 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Admin Status</th>
+                <th>API Calls Left</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -32,6 +33,7 @@
                     <td><%= searchResult.username %></td>
                     <td><%= searchResult.email %></td>
                     <td><%= searchResult.isAdmin ? "Yes" : "No" %></td>
+                    <td><%= searchResult.apiCallsLeft%></td>
                     <td>
                         <button class="btn btn-danger delete-user" data-id="<%= searchResult._id %>">Delete</button>
                     </td>
@@ -51,6 +53,7 @@
                         <td><%= user.username %></td>
                         <td><%= user.email %></td>
                         <td><%= user.isAdmin ? "Yes" : "No" %></td>
+                        <td><%= user.apiCallsLeft%></td>
                         <td>
                             <button class="btn btn-danger delete-user" data-id="<%= user._id %>">Delete</button>
                         </td>
