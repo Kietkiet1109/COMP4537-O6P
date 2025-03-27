@@ -1,38 +1,108 @@
 <%- include("template/header-logged-in", { isAdmin }) %>
-<div class="admin-container">
-    <!-- Search Section -->
-    <div class="admin-search-container">
-        <form id="admin-search-form" action="/admin/search" method="GET" class="admin-search-form d-flex">
-            <input type="text" name="username" class="form-control admin-search-bar" placeholder="Search for a username..." required>
-            <button type="submit" class="btn btn-primary admin-search-button ms-2">Search</button>
-        </form>
-    </div>
 
-    <!-- Results Section -->
-    <% if (searchAttempted) { %> <!-- Render only if searchAttempted is true -->
-        <div class="admin-results-container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card admin-result-card bg-dark text-white">
-                        <div class="card-body">
-                            <div class="admin-result-template text-center">
-                                <% if (searchResult) { %>
-                                    <h3>Search Result:</h3>
-                                    <p>Username: <%= searchResult.username %></p>
-                                    <p>Email: <%= searchResult.email %></p>
-                                    <p>Admin Status: <%= searchResult.isAdmin ? "Yes" : "No" %></p>
-                                <% } else { %>
-                                    <div class="admin-no-result">
-                                        <p>No user found with the entered username.</p>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <% } %>
+<div class="admin-container text-center">
+    <h2 class="mb-4">Admin Panel - User Management</h2>
+
+    <!-- Search Form -->
+    <form method="GET" action="/admin/search" class="mb-4">
+        <input type="text" name="username" id="searchBar" class="form-control" placeholder="Search users..." />
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </form>
+
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Admin Status</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="userList">
+            <% if (searchResult) { %>
+                <tr class="user-row">
+                    <td>
+                        <% if (searchResult.isAdmin) { %>
+                            <button class="btn btn-warning toggle-admin" data-id="<%= searchResult._id %>" data-admin="false">Make User</button>
+                        <% } else { %>
+                            <button class="btn btn-success toggle-admin" data-id="<%= searchResult._id %>" data-admin="true">Make Admin</button>
+                        <% } %>
+                    </td>
+                    <td><%= searchResult.username %></td>
+                    <td><%= searchResult.email %></td>
+                    <td><%= searchResult.isAdmin ? "Yes" : "No" %></td>
+                    <td>
+                        <button class="btn btn-danger delete-user" data-id="<%= searchResult._id %>">Delete</button>
+                    </td>
+                </tr>
+            <% } else if (searchAttempted) { %>
+                <tr><td colspan="5">No user found matching your search criteria.</td></tr>
+            <% } else { %>
+                <% users.forEach(user => { %>
+                    <tr class="user-row">
+                        <td>
+                            <% if (user.isAdmin) { %>
+                                <button class="btn btn-warning toggle-admin" data-id="<%= user._id %>" data-admin="false">Make User</button>
+                            <% } else { %>
+                                <button class="btn btn-success toggle-admin" data-id="<%= user._id %>" data-admin="true">Make Admin</button>
+                            <% } %>
+                        </td>
+                        <td><%= user.username %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.isAdmin ? "Yes" : "No" %></td>
+                        <td>
+                            <button class="btn btn-danger delete-user" data-id="<%= user._id %>">Delete</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
+        </tbody>
+    </table>
 </div>
 
 <%- include("template/footer") %>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.toggle-admin').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            const makeAdmin = this.getAttribute('data-admin') === 'true';
+
+            fetch('/admin/toggle-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, makeAdmin })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      location.reload();
+                  } else {
+                      alert('Failed to update admin status.');
+                  }
+              });
+        });
+    });
+
+    document.querySelectorAll('.delete-user').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            if (confirm("Are you sure you want to delete this user?")) {
+                fetch('/admin/delete-user', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          location.reload();
+                      } else {
+                          alert('Failed to delete user.');
+                      }
+                  });
+            }
+        });
+    });
+});
+</script>
