@@ -6,8 +6,7 @@ const mongoose = require("mongoose");
  * This schema tracks API requests made by users, including the user ID, endpoint, method, and timestamp.
  */
 const apiUsageSchema = new mongoose.Schema({
-    method: { type: String, required: true, enum: ["GET", "POST", "PUT", "DELETE"] },
-    endpoint: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     totalRequests: { type: Number, default: 0 },
 });
 
