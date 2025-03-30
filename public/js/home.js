@@ -306,7 +306,6 @@ router.post('/signup', async (req, res) => {
             email,
             password: hashedPassword,
             isAdmin: false,
-            apiCallsLeft: 20,
         });
         await newUser.save();
         req.login(newUser, loginErr => {

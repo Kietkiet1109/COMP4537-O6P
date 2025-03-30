@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     resetPassword: { type: String, unique: false, required: false },
     resetPasswordDate: { type: Date, unique: false, required: false },
     apiCallsLeft: {type: Number, unique: false, required: true},
+    apiKey: { type: String, required: false, unique: true },
 });
 
 const User = mongoose.model('User', userSchema);
