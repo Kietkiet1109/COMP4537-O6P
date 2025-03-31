@@ -25,9 +25,7 @@ app.use("/css", express.static("./public/css"));
 app.use("/img", express.static("./public/img"));
 
 // Optional route to render home page via EJS
-app.get('/', (req, res) => {
-    res.render('index');
-});
+app.get('/', require('./js/home'));
 
 // 404 fallback
 app.get('*', (req, res) => {
