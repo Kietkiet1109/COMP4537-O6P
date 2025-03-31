@@ -3,6 +3,7 @@
  * Initializes various modal instances and handles form submissions and button clicks.
  */
 document.addEventListener('DOMContentLoaded', function () {
+    const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api';
     let enterEmailModalInstance;
     let successModalInstance;
     let loginFailedModalInstance;
@@ -10,6 +11,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
     const enterEmailForm = document.getElementById('enter-email-form');
     const successButton = document.getElementById('successButton');
+
+    // // loadUserInfo first
+    // async function loadUserInfo() {
+    //     const welcomeText = document.getElementById("welcomeText");
+    //     const adminPanelLink = document.getElementById("adminPanelLink");
+
+    //     if (!welcomeText && !adminPanelLink) return;
+
+    //     try {
+    //         const response = await fetch(`${API_BASE}/checkAuth`, {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             credentials: 'include'
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (data.success && data.user) {
+    //             const { username, isAdmin } = data.user;
+    //             if (welcomeText) {
+    //                 welcomeText.textContent = `Welcome, ${isAdmin ? "Admin " : ""}${username}!`;
+    //             }
+    //             if (adminPanelLink && isAdmin) {
+    //                 adminPanelLink.style.display = "inline";
+    //             }
+    //         } else {
+    //             if (welcomeText) {
+    //                 welcomeText.textContent = "Welcome, Guest!";
+    //             }
+    //         }
+    //     } catch (err) {
+    //         console.error("Failed to fetch user info:", err);
+    //     }
+    // }
+
+    // loadUserInfo();
 
     // Show enter email modal
     if (forgotPasswordButton) {
@@ -28,28 +65,27 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             const email = document.getElementById('enter-email').value;
             if (email) {
-                fetch('/forgot', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: email })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            if (!successModalInstance) {
-                                successModalInstance = new bootstrap.Modal(document.getElementById('modalForgot'));
-                            }
-                            enterEmailModalInstance.hide();
-                            successModalInstance.show();
-                        } else {
-                            alert(data.message || 'Failed to send reset email. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        alert('Failed to send reset email. Please try again.');
+                try {
+                    const response = await fetch(`${API_BASE}/forgot`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ email })
                     });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (!successModalInstance) {
+                            successModalInstance = new bootstrap.Modal(document.getElementById('modalForgot'));
+                        }
+                        enterEmailModalInstance.hide();
+                        successModalInstance.show();
+                    } else {
+                        alert(data.message || 'Failed to send reset email. Please try again.');
+                    }
+                } catch (error) {
+                    alert('Failed to send reset email. Please try again.');
+                }
             }
         });
     }
@@ -74,29 +110,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 identifier: formData.get('identifier'),
                 password: formData.get('password')
             };
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            const errorData = await response.json();
-            if (response.ok) {
-                window.location.href = '/home';
-            } else {
-                const errorMessageHeader = document.getElementById('errorMessageH');
-                const errorMessageBody = document.getElementById('errorMessageB');
-                if (!loginFailedModalInstance) {
-                    loginFailedModalInstance = new bootstrap.Modal(document.getElementById('modalLoginFailed'));
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+                const errorData = await response.json();
+                if (response.ok) {
+                    window.location.href = '/home';
+                } else {
+                    const errorMessageHeader = document.getElementById('errorMessageH');
+                    const errorMessageBody = document.getElementById('errorMessageB');
+                    if (!loginFailedModalInstance) {
+                        loginFailedModalInstance = new bootstrap.Modal(document.getElementById('modalLoginFailed'));
+                    }
+                    errorMessageHeader.textContent = errorData.message.charAt(0).toUpperCase() + errorData.message.slice(1);
+                    errorMessageBody.textContent = errorData.message;
+                    loginFailedModalInstance.show();
                 }
-
-                // Update LoginFailed Modal
-                let headerMsg = errorData.message;
-                errorMessageHeader.textContent = headerMsg.charAt(0).toUpperCase() + headerMsg.slice(1);
-                errorMessageBody.textContent = errorData.message;
-                loginFailedModalInstance.show();
+            } catch (err) {
+                alert('Login failed. Please try again.');
             }
         });
     }
@@ -112,23 +147,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 password: formData.get('password'),
                 confirmPassword: formData.get('confirmPassword')
             };
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            try {
+                const response = await fetch(form.action.replace('/reset', `${API_BASE}/reset`), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
 
-            if (response.ok) {
-                const modalElement = document.getElementById('modalTour');
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
+                if (response.ok) {
+                    const modalElement = document.getElementById('modalTour');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + errorData.message);
                 }
-            } else {
-                const errorData = await response.json();
-                alert('Error: ' + errorData.message);
+            } catch (err) {
+                alert('Password reset failed. Please try again.');
             }
         });
     }
@@ -144,11 +182,22 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle user already exists modal
     const signupForm = document.getElementById('signup-form');
     if (signupForm) {
-        signupForm.addEventListener('submit', function (event) {
+        signupForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            const formData = $(this).serialize();
-            $.post('/signup', formData, function (data) {
-                console.log("Server Response:", data);
+            const formData = new FormData(this);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+            try {
+                const response = await fetch(`${API_BASE}/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(jsonData)
+                });
+
+                const data = await response.json();
                 if (data.success) {
                     window.location.href = "/home";
                 } else if (data.message === "User already exists.") {
@@ -156,9 +205,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     alert(data.message || 'Signup failed. Please try again.');
                 }
-            }).fail(function (xhr) {
-                console.error("Signup request failed:", xhr.responseText);
-            });
+            } catch (err) {
+                alert('Signup request failed.');
+            }
         });
     }
 });
