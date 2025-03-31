@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios'); // For forwarding requests to your API server
 
-const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api';
+const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
 
 router.get('/', (req, res) => {
     res.render('index');

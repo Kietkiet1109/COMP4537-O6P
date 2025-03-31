@@ -3,7 +3,7 @@
  * Initializes various modal instances and handles form submissions and button clicks.
  */
 document.addEventListener('DOMContentLoaded', function () {
-    const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api';
+    const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
     let enterEmailModalInstance;
     let successModalInstance;
     let loginFailedModalInstance;
