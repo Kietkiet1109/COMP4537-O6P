@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const User = require('./user');
 const ApiUsage = require('./apiUsage');
+const ApiStats = require('./apiStats');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
@@ -51,6 +52,9 @@ router.get('/admin', async (req, res) => {
         }
 
         console.log("Users retrieved:", users); // Debugging: Check if users exist
+
+        const apiStats = await ApiStats.find(); 
+
         res.render('admin', { 
             username: req.user.username, 
             isAdmin: req.user.isAdmin, 
@@ -58,6 +62,7 @@ router.get('/admin', async (req, res) => {
             searchResult: searchResult || null, // Ensure searchResult is always defined
             searchAttempted: searchAttempted,
             apiCallsLeft: apiCallsLeft,
+            apiStats: apiStats,
         });
     } catch (err) {
         console.error("Database error:", err);
@@ -105,7 +110,7 @@ router.get('/admin/search', async (req, res) => {
     let users = await User.find(); // Get all users if no search query
     let searchResult = null;
     let searchAttempted = false;
-
+    const apiStats = await ApiStats.find(); 
     try {
         if (username) {
             searchAttempted = true;
@@ -117,7 +122,8 @@ router.get('/admin/search', async (req, res) => {
             isAdmin: req.user.isAdmin,
             users: users,
             searchResult: searchResult || null, // Ensure searchResult is always defined
-            searchAttempted: searchAttempted
+            searchAttempted: searchAttempted,
+            apiStats: apiStats,
         });
     } catch (err) {
         console.error(err);
