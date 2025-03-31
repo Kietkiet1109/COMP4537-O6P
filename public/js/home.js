@@ -16,45 +16,60 @@ router.get('/home', (req, res) => {
     });
 });
 
-// Admin Panel Route
-router.get('/admin', (req, res) => {
+router.get('/admin', async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).send('Access Denied');
     }
-    res.render('admin', { 
-        username: req.user.username, 
-        isAdmin: req.user.isAdmin, 
-        searchResult: null, 
-        searchAttempted: false 
-    });
+
+
+    const { username } = req.query;
+    let users = await User.find(); // Get all users if no search query
+    let searchResult = null;
+    let searchAttempted = false;
+    try {
+
+        if (username) {
+            searchAttempted = true;
+            searchResult = await User.findOne({ username: username.trim() }); // Search for a specific user in the database
+        }
+
+        console.log("Users retrieved:", users); // Debugging: Check if users exist
+        res.render('admin', { 
+            username: req.user.username, 
+            isAdmin: req.user.isAdmin, 
+            users: users, // Ensure users is passed here
+            searchResult: searchResult || null, // Ensure searchResult is always defined
+            searchAttempted: searchAttempted
+        });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
-
-// Admin Search Route
 router.get('/admin/search', async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).send('Access Denied');
     }
 
     const { username } = req.query;
+    let users = await User.find(); // Get all users if no search query
+    let searchResult = null;
+    let searchAttempted = false;
 
     try {
-        const user = await User.findOne({ username: username.trim() }); // Search for user in the database
-        if (user) {
-            res.render('admin', {
-                username: req.user.username,
-                isAdmin: req.user.isAdmin,
-                searchResult: user,
-                searchAttempted: true
-            });
-        } else {
-            res.render('admin', {
-                username: req.user.username,
-                isAdmin: req.user.isAdmin,
-                searchResult: null,
-                searchAttempted: true
-            });
+        if (username) {
+            searchAttempted = true;
+            searchResult = await User.findOne({ username: username.trim() }); // Search for a specific user in the database
         }
+
+        res.render('admin', {
+            username: req.user.username,
+            isAdmin: req.user.isAdmin,
+            users: users,
+            searchResult: searchResult || null, // Ensure searchResult is always defined
+            searchAttempted: searchAttempted
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -62,6 +77,60 @@ router.get('/admin/search', async (req, res) => {
 });
 
 // Forgot password
+router.post('/admin/toggle-admin', async (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const { userId, makeAdmin } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'Missing userId' });
+        }
+
+        // Update user role in the database
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.isAdmin = !user.isAdmin;
+        await user.save();
+
+        res.json({ success: true, isAdmin: user.isAdmin });
+    } catch (err) {
+        console.error("Error toggling admin status:", err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Delete User
+router.delete('/admin/delete-user', async (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+        return res.status(403).json({ success: false, message: "Access Denied" });
+    }
+
+    try {
+        const { userId } = req.body; // Get userId from the request body
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "Missing user ID" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        await user.deleteOne(); // Delete the user
+        res.json({ success: true, message: "User deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting user:", err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
 router.post('/forgot', async (req, res) => {
     try {
         const result = await axios.post(`${API_BASE}/forgot`, req.body);
