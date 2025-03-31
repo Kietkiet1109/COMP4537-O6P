@@ -6,7 +6,6 @@ const User = require('./user');
 const ApiUsage = require('./apiUsage');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -305,7 +304,7 @@ router.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
          // Generate a unique API key using crypto
-        const apiKey = uuidv4();  // Generates a 64-character hex string
+        const apiKey = generateUUID();  // Generates a 64-character hex string
 
         const newUser = new User({
             username,
@@ -335,5 +334,21 @@ router.post('/signup', async (req, res) => {
         return res.json({ success: false, message: "Internal server error" });
     }
 });
+
+function generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
 
 module.exports = router;
