@@ -12,6 +12,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const enterEmailForm = document.getElementById('enter-email-form');
     const successButton = document.getElementById('successButton');
 
+    // // loadUserInfo first
+    // async function loadUserInfo() {
+    //     const welcomeText = document.getElementById("welcomeText");
+    //     const adminPanelLink = document.getElementById("adminPanelLink");
+
+    //     if (!welcomeText && !adminPanelLink) return;
+
+    //     try {
+    //         const response = await fetch(`${API_BASE}/checkAuth`, {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             credentials: 'include'
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (data.success && data.user) {
+    //             const { username, isAdmin } = data.user;
+    //             if (welcomeText) {
+    //                 welcomeText.textContent = `Welcome, ${isAdmin ? "Admin " : ""}${username}!`;
+    //             }
+    //             if (adminPanelLink && isAdmin) {
+    //                 adminPanelLink.style.display = "inline";
+    //             }
+    //         } else {
+    //             if (welcomeText) {
+    //                 welcomeText.textContent = "Welcome, Guest!";
+    //             }
+    //         }
+    //     } catch (err) {
+    //         console.error("Failed to fetch user info:", err);
+    //     }
+    // }
+
+    // loadUserInfo();
+
     // Show enter email modal
     if (forgotPasswordButton) {
         forgotPasswordButton.addEventListener('click', function (event) {
