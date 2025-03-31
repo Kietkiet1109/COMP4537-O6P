@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: { type: Boolean, required: false, default: false},
     resetPassword: { type: String, unique: false, required: false },
     resetPasswordDate: { type: Date, unique: false, required: false },
-    apiCallsLeft: {type: Number, unique: false, required: true},
     apiKey: { type: String, required: false, unique: true },
 });
 

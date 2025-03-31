@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
  */
 const apiUsageSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    apiCallsLeft: {type: Number, unique: false, required: true},
     totalRequests: { type: Number, default: 0 },
 });
 

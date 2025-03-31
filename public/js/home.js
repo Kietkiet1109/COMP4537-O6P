@@ -3,8 +3,10 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const User = require('./user');
+const ApiUsage = require('./apiUsage');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -301,18 +303,33 @@ router.post('/signup', async (req, res) => {
             return res.json({ success: false, message: "User already exists." });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+
+         // Generate a unique API key using crypto
+        const apiKey = uuidv4();  // Generates a 64-character hex string
+
         const newUser = new User({
             username,
             email,
             password: hashedPassword,
             isAdmin: false,
+            apiKey,
         });
         await newUser.save();
+
+        // Create a corresponding entry in the ApiUsage table for this user
+        const newApiUsage = new ApiUsage({
+            userId: newUser._id,  // Use the new user's ID
+            apiCallsLeft: 20,
+            totalRequests: 0,  // Initial value of 0 requests
+        });
+        // Save the ApiUsage entry to the database
+        await newApiUsage.save();
+
         req.login(newUser, loginErr => {
             if (loginErr) {
                 return res.json({ success: false, message: "Error logging in." });
             }
-            return res.json({ success: true });
+            return res.json({ success: true, apiKey: newUser.apiKey });
         });
     } catch (err) {
         return res.json({ success: false, message: "Internal server error" });
