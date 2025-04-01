@@ -28,11 +28,7 @@ app.use("/img", express.static("./public/img"));
 app.get('/', require('./public/js/home'));
 
 // 404 fallback
-app.get('*', (req, res) => {
-    res.status(404).render('404');
-});
+app.get('*', (req, res) => res.status(404).render('404'));
 
 // Start server
-app.listen(port, () => {
-    console.log(`Client running at http://localhost:${port}`);
-});
+app.listen(port, () => console.log(`Client running at http://localhost:${port}`));
