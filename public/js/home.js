@@ -12,7 +12,7 @@ function getAuthHeaders() {
 
 // 🔹 Landing Page
 router.get('/', (req, res) => {
-    res.render('index');
+    res.render('home');
 });
 
 // 🔹 Home Page
