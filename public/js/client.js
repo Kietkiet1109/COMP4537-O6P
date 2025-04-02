@@ -2,8 +2,52 @@
  * Event listener for DOMContentLoaded.
  * Initializes various modal instances and handles form submissions and button clicks.
  */
+const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
+
+async function fetchUserInfoAndInject() {
+    try {
+        const res = await fetch(`${API_BASE}/checkAuth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const data = await res.json();
+
+        if (!data.success || !data.user) {
+            window.location.href = '/'; // Not logged in, redirect to login
+            return;
+        }
+
+        const { username, isAdmin } = data.user;
+
+        // Home page personalization
+        const welcomeText = document.getElementById('welcomeText');
+        if (welcomeText) {
+            welcomeText.textContent = `Welcome, ${isAdmin ? 'Admin ' : ''}${username}!`;
+        }
+
+        const adminLink = document.getElementById('adminPanelLink');
+        if (adminLink && isAdmin) {
+            adminLink.style.display = 'inline-block';
+        }
+
+        // Admin page protection
+        const adminPanelHeading = document.querySelector('.admin-container');
+        if (adminPanelHeading && !isAdmin) {
+            document.body.innerHTML = '<div class="text-center mt-5"><h2>Access Denied</h2><p>You are not an admin.</p></div>';
+        }
+
+    } catch (err) {
+        console.error("Auth check failed:", err);
+        window.location.href = '/'; // Fallback if error
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
-    const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
+    fetchUserInfoAndInject();
+
     let enterEmailModalInstance;
     let successModalInstance;
     let loginFailedModalInstance;
@@ -11,42 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
     const enterEmailForm = document.getElementById('enter-email-form');
     const successButton = document.getElementById('successButton');
-
-    // // loadUserInfo first
-    // async function loadUserInfo() {
-    //     const welcomeText = document.getElementById("welcomeText");
-    //     const adminPanelLink = document.getElementById("adminPanelLink");
-
-    //     if (!welcomeText && !adminPanelLink) return;
-
-    //     try {
-    //         const response = await fetch(`${API_BASE}/checkAuth`, {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             credentials: 'include'
-    //         });
-
-    //         const data = await response.json();
-
-    //         if (data.success && data.user) {
-    //             const { username, isAdmin } = data.user;
-    //             if (welcomeText) {
-    //                 welcomeText.textContent = `Welcome, ${isAdmin ? "Admin " : ""}${username}!`;
-    //             }
-    //             if (adminPanelLink && isAdmin) {
-    //                 adminPanelLink.style.display = "inline";
-    //             }
-    //         } else {
-    //             if (welcomeText) {
-    //                 welcomeText.textContent = "Welcome, Guest!";
-    //             }
-    //         }
-    //     } catch (err) {
-    //         console.error("Failed to fetch user info:", err);
-    //     }
-    // }
-
-    // loadUserInfo();
 
     // Show enter email modal
     if (forgotPasswordButton) {
@@ -141,31 +149,34 @@ document.addEventListener('DOMContentLoaded', function () {
     if (resetPasswordForm) {
         resetPasswordForm.addEventListener('submit', async function (event) {
             event.preventDefault();
+
             const form = event.target;
-            const formData = new FormData(form);
-            const data = {
-                password: formData.get('password'),
-                confirmPassword: formData.get('confirmPassword')
-            };
+            const password = form.password.value;
+            const confirmPassword = form.confirmPassword.value;
+
+            // Extract token from the current URL
+            const token = window.location.pathname.split('/').pop();
+
             try {
-                const response = await fetch(form.action.replace('/reset', `${API_BASE}/reset`), {
+                const response = await fetch(`${API_BASE}/reset/${token}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ password, confirmPassword })
                 });
 
-                if (response.ok) {
+                const result = await response.json();
+                if (response.ok && result.success) {
                     const modalElement = document.getElementById('modalTour');
                     if (modalElement) {
                         const modal = new bootstrap.Modal(modalElement);
                         modal.show();
                     }
                 } else {
-                    const errorData = await response.json();
-                    alert('Error: ' + errorData.message);
+                    alert(result.message || 'Password reset failed.');
                 }
             } catch (err) {
+                console.error('Reset error:', err);
                 alert('Password reset failed. Please try again.');
             }
         });

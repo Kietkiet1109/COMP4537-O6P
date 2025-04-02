@@ -31,15 +31,13 @@
                 <i class="bi bi-house-door"></i> Home
             </button>
         </a>
-        
-        <% if (isAdmin) { %> 
-            <!-- Admin Panel Button (Visible Only to Admins) -->
-            <a href="/admin">
-                <button type="button" class="btn btn-outline-danger">
-                    <i class="bi bi-tools"></i> Admin Panel
-                </button>
-            </a>
-        <% } %> 
+
+        <!-- Admin Panel Button (Visible Only to Admins) -->
+        <a href="/admin" id="adminPanelLink" style="display: none;">
+            <button type="button" class="btn btn-outline-danger">
+                <i class="bi bi-tools"></i> Admin Panel
+            </button>
+        </a>
 
         <!-- Logout Button -->
         <a href="/">
@@ -48,5 +46,5 @@
             </button>
         </a>
     </nav>
-    
-<body>
+
+    <body>
