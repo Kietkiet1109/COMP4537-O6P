@@ -18,11 +18,11 @@ async function fetchUserInfoAndInject() {
         const data = await res.json();
         console.log('[fetchUserInfoAndInject] API response:', data);
 
-        if (!data.success || !data.user) {
-            console.warn('Not authenticated');
-            window.location.href = '/';
-            return;
-        }
+        // if (!data.success || !data.user) {
+        //     console.warn('Not authenticated');
+        //     window.location.href = '/';
+        //     return;
+        // }
 
         const { username, isAdmin } = data.user;
 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success && data.token) {
                     localStorage.setItem('authToken', data.token);
                     window.location.href = "/home";
