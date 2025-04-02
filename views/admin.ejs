@@ -9,6 +9,8 @@
         <button type="submit" class="btn btn-primary mt-2">Search</button>
     </form>
 
+    <!-- User Management Table -->
+    <h3 class="mb-4">User Management</h3>
     <table class="table table-dark table-striped">
         <thead>
             <tr>
@@ -16,6 +18,7 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Admin Status</th>
+                <th>API Calls Left</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -32,6 +35,7 @@
                     <td><%= searchResult.username %></td>
                     <td><%= searchResult.email %></td>
                     <td><%= searchResult.isAdmin ? "Yes" : "No" %></td>
+                    <td><%= searchResult.apiCallsLeft%></td>
                     <td>
                         <button class="btn btn-danger delete-user" data-id="<%= searchResult._id %>">Delete</button>
                     </td>
@@ -51,12 +55,34 @@
                         <td><%= user.username %></td>
                         <td><%= user.email %></td>
                         <td><%= user.isAdmin ? "Yes" : "No" %></td>
+                        <td><%= user.apiCallsLeft%></td>
                         <td>
                             <button class="btn btn-danger delete-user" data-id="<%= user._id %>">Delete</button>
                         </td>
                     </tr>
                 <% }); %>
             <% } %>
+        </tbody>
+    </table>
+
+    <!-- API Stats Table -->
+    <h3 class="mt-5 mb-4">Total API Usage Stats</h3>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Total Requests</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% apiStats.forEach(stat => { %>
+                <tr>
+                    <td><%= stat.method %></td>
+                    <td><%= stat.endpoint %></td>
+                    <td><%= stat.totalRequests %></td>
+                </tr>
+            <% }); %>
         </tbody>
     </table>
 </div>
