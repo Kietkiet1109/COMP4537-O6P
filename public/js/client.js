@@ -46,7 +46,10 @@ async function fetchUserInfoAndInject() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    fetchUserInfoAndInject();
+    const pageId = document.body.id;
+    if (pageId === 'home-page' || pageId === 'admin-page') {
+        fetchUserInfoAndInject();
+    }
 
     let enterEmailModalInstance;
     let successModalInstance;
