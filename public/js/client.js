@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify(data)
                 });
                 const errorData = await response.json();
-                if (response.ok) {
+                if (!response.ok) {
                     window.location.href = '/home';
                 } else {
                     const errorMessageHeader = document.getElementById('errorMessageH');
