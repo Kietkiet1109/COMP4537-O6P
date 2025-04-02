@@ -58,7 +58,7 @@ router.get('/admin/search', async (req, res) => {
 // 🔹 Toggle Admin Status (Protected)
 router.post('/admin/toggle-admin', async (req, res) => {
     try {
-        const result = await axios.put(`${API_BASE}/admin`, req.body, { headers: getAuthHeaders() });
+        const result = await axios.patch(`${API_BASE}/admin`, req.body, { headers: getAuthHeaders() });
         res.status(200).json(result.data);
     }
     catch (err) {
