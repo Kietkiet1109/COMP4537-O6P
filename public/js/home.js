@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 router.get('/home', async (req, res) => {
     // res.render('home', { pageId: 'home-page', isAdmin: false });
     const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
-    res.render('home');
+    res.render('home', {pageId: 'home-page', isAdmin: result.data.isAdmin});
 });
 
 // 🔹 Admin Dashboard (Protected)
