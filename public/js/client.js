@@ -51,7 +51,7 @@ async function fetchUserInfoAndInject() {
 
     } catch (err) {
         console.error("Auth check failed:", err);
-        window.location.href = '/'; // Fallback
+        // window.location.href = '/'; // Fallback
     }
 }
 
