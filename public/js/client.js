@@ -6,41 +6,64 @@ const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3
 
 async function fetchUserInfoAndInject() {
     try {
-        const res = await fetch(`${API_BASE}/checkAuth`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
+        // Extract token from cookie
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1];
+
+        if (!token) {
+            console.warn('No token found in cookies');
+            window.location.href = '/';
+            return;
+        }
+        console.log('[fetchUserInfoAndInject] Found token:', token.slice(0, 10) + '...');
+
+        const res = await fetch(`${API_BASE}/currentUser`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         const data = await res.json();
+        console.log('[fetchUserInfoAndInject] API response:', data);
 
         if (!data.success || !data.user) {
-            window.location.href = '/'; // Not logged in, redirect to login
+            console.warn('Not authenticated');
+            window.location.href = '/';
             return;
         }
 
         const { username, isAdmin } = data.user;
 
-        // Home page personalization
+        // 🔹 Update welcome message
         const welcomeText = document.getElementById('welcomeText');
         if (welcomeText) {
             welcomeText.textContent = `Welcome, ${isAdmin ? 'Admin ' : ''}${username}!`;
         }
 
+        // 🔹 Show admin panel link if user is admin
         const adminLink = document.getElementById('adminPanelLink');
         if (adminLink && isAdmin) {
             adminLink.style.display = 'inline-block';
         }
 
-        // Admin page protection
-        const adminPanelHeading = document.querySelector('.admin-container');
-        if (adminPanelHeading && !isAdmin) {
-            document.body.innerHTML = '<div class="text-center mt-5"><h2>Access Denied</h2><p>You are not an admin.</p></div>';
+        // 🔹 Protect admin-only content
+        const adminPanelContainer = document.querySelector('.admin-container');
+        if (adminPanelContainer && !isAdmin) {
+            document.body.innerHTML = `
+                <div class="text-center mt-5">
+                    <h2>Access Denied</h2>
+                    <p>You are not an admin.</p>
+                </div>
+            `;
         }
 
     } catch (err) {
         console.error("Auth check failed:", err);
-        window.location.href = '/'; // Fallback if error
+        window.location.href = '/'; // Fallback
     }
 }
 
