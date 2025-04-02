@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify(data)
                 });
                 const errorData = await response.json();
-                if (!response.ok) {
+                if (response.ok) {
                     window.location.href = '/home';
                 } else {
                     const errorMessageHeader = document.getElementById('errorMessageH');
@@ -185,13 +185,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Handle modal button click
-    const modalButton = document.getElementById('modalButton');
-    if (modalButton) {
-        modalButton.addEventListener('click', function () {
-            window.location.href = '/';
-        });
-    }
+    // // Handle modal button click
+    // const modalButton = document.getElementById('modalButton');
+    // if (modalButton) {
+    //     modalButton.addEventListener('click', function () {
+    //         window.location.href = '/';
+    //     });
+    // }
 
     // Handle user already exists modal
     const signupForm = document.getElementById('signup-form');
