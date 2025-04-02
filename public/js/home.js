@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', (req, res) => {
-    res.render('home');
+    res.render('home', { pageId: 'home-page' });
 });
 
 // 🔹 Admin Dashboard (Protected)
