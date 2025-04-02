@@ -17,21 +17,22 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', (req, res) => {
-    res.render('home', { pageId: 'home-page' });
+    res.render('home', { pageId: 'home-page', isAdmin: false });
 });
 
 // 🔹 Admin Dashboard (Protected)
 router.get('/admin', async (req, res) => {
     try {
         const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
-        res.render('admin',
-            {
-                username: result.data.username,
-                isAdmin: result.data.isAdmin,
-                users: result.data.users
-            });
-    }
-    catch (err) {
+        res.render('admin', {
+            username: result.data.username,
+            isAdmin: result.data.isAdmin,
+            users: result.data.users,
+            apiStats: result.data.apiStats || [],
+            pageId: 'admin-page'
+        });
+    } catch (err) {
+        console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send('Access Denied');
     }
 });
