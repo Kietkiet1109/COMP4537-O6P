@@ -16,8 +16,10 @@ router.get('/', (req, res) => {
 });
 
 // 🔹 Home Page
-router.get('/home', (req, res) => {
-    res.render('home', { pageId: 'home-page', isAdmin: false });
+router.get('/home', async (req, res) => {
+    // res.render('home', { pageId: 'home-page', isAdmin: false });
+    const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
+    res.render('home');
 });
 
 // 🔹 Admin Dashboard (Protected)
