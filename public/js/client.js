@@ -185,13 +185,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // // Handle modal button click
-    // const modalButton = document.getElementById('modalButton');
-    // if (modalButton) {
-    //     modalButton.addEventListener('click', function () {
-    //         window.location.href = '/';
-    //     });
-    // }
+    // Handle modal button click
+    const modalButton = document.getElementById('modalButton');
+    if (modalButton) {
+        modalButton.addEventListener('click', function () {
+            window.location.href = '/';
+        });
+    }
 
     // Handle user already exists modal
     const signupForm = document.getElementById('signup-form');
