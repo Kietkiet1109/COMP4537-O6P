@@ -6,19 +6,7 @@ const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3
 
 async function fetchUserInfoAndInject() {
     try {
-        // Extract token from cookie
-        const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('token='))
-            ?.split('=')[1];
-
-        if (!token) {
-            console.warn('No token found in cookies');
-            window.location.href = '/';
-            return;
-        }
-        console.log('[fetchUserInfoAndInject] Found token:', token.slice(0, 10) + '...');
-
+        const token = localStorage.getItem('authToken');
         const res = await fetch(`${API_BASE}/currentUser`, {
             method: 'GET',
             headers: {
@@ -152,7 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify(data)
                 });
                 const errorData = await response.json();
-                if (response.ok) {
+                if (response.ok && errorData.token) {
+                    localStorage.setItem('authToken', errorData.token);
                     window.location.href = '/home';
                 } else {
                     const errorMessageHeader = document.getElementById('errorMessageH');
@@ -235,7 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 const data = await response.json();
-                if (data.success) {
+                
+                if (data.success && data.token) {
+                    localStorage.setItem('authToken', data.token);
                     window.location.href = "/home";
                 } else if (data.message === "User already exists.") {
                     $('#modalUserExists').modal('show');

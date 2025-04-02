@@ -97,8 +97,6 @@ router.get('/reset/:token', (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const result = await axios.post(`${API_BASE}/login`, req.body);
-        // Store JWT token
-        localStorage.setItem('authToken', result.data.token);
         res.status(200).json(result.data);
     }
     catch (err) {
@@ -110,8 +108,6 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
     try {
         const result = await axios.post(`${API_BASE}/signup`, req.body);
-        // Store JWT token
-        localStorage.setItem('authToken', result.data.token);
         res.status(200).json(result.data);
     }
     catch (err) {

@@ -24,7 +24,7 @@ app.use("/js", express.static("./public/js"));
 app.use("/css", express.static("./public/css"));
 app.use("/img", express.static("./public/img"));
 
-// Optional route to render home page via EJS
+// Route
 app.use('/', require('./public/js/home'));
 
 // 404 fallback
