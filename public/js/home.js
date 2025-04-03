@@ -19,6 +19,35 @@ function getAuthHeaders(req)
     return { Authorization: `Bearer ${ token }` };
 }
 
+async function makeApiRequest(endpoint, options = {})
+{
+    try
+    {
+        const response = await fetch(`${ API_BASE }${ endpoint }`, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
+                ...options.headers
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok)
+        {
+            throw new Error(data.message || 'API request failed');
+        }
+
+        return data;
+    } catch (err)
+    {
+        console.error(`API request failed (${ endpoint }):`, err.message);
+        alert(err.message || 'An unexpected error occurred. Please try again.');
+        return null;
+    }
+}
+
 // 🔹 Landing Page
 router.get('/', (req, res) => {
     res.render('index');
@@ -36,18 +65,29 @@ router.get('/home', async (req, res) => {
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
 
-// 🔹 Admin Dashboard (Protected)
 router.get('/admin', async (req, res) => {
     try {
         console.log("Checking admin status...");
-        // const result = await axios.get(`${ API_BASE}/currentUser`, { headers: getAuthHeaders(req) });
-        const result = await apiRequest('/currentUser', {method: 'GET'});
-        console.log("Am I an admin: " + result.data.isAdmin);
+        
+        // Fetch the current user data to check if they are an admin
+        const data = await apiRequest('/currentUser', { method: 'GET' });
+        const { username, isAdmin } = data.user;
+        console.log("Am I an admin: " + isAdmin);
+
+        // Fetch the list of users
+        const usersResponse = await apiRequest('/users', { method: 'GET' });
+        const users = usersResponse.data.users || [];
+
+        // Fetch the API usage stats
+        const statsResponse = await apiRequest('/api-stats', { method: 'GET' });
+        const apiStats = statsResponse.data.apiStats || [];
+
+        // Render the admin page with the data
         res.render('admin', {
-            username: result.data.username,
-            isAdmin: result.data.isAdmin,
-            users: result.data.users || [],
-            apiStats: result.data.apiStats || [],
+            username: username,
+            isAdmin: isAdmin,
+            users: users,
+            apiStats: apiStats,
             pageId: 'admin-page'
         });
     } catch (err) {
@@ -55,6 +95,29 @@ router.get('/admin', async (req, res) => {
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
+
+
+
+
+// 🔹 Admin Dashboard (Protected)
+// router.get('/admin', async (req, res) => {
+//     try {
+//         console.log("Checking admin status...");
+//         const result = await axios.get(`${ API_BASE}/currentUser`, { headers: getAuthHeaders(req) });
+//         console.log("Am I an admin: " + result.data.isAdmin);
+//         res.render('admin', {
+//             username: result.data.username,
+//             isAdmin: result.data.isAdmin,
+//             users: result.data.users || [],
+//             apiStats: result.data.apiStats || [],
+//             pageId: 'admin-page'
+//         });
+//     } catch (err) {
+//         console.error('Admin route failed:', err.message);
+//         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
+//     }
+// });
 
 // 🔹 Admin Search (Protected)
 router.get('/admin/search', async (req, res) => {
