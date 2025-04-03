@@ -42,7 +42,7 @@ router.get('/admin', async (req, res) =>
         console.log("Checking admin status...");
         const params = req.query;
         console.log("Received query parameters:", params);
-        const result = await axios.get(`${ process.env.API_BASE }/admin`, {
+        const result = await axios.get(`${ process.env.API_BASE }/getUsers`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${ params.token }`
