@@ -33,34 +33,6 @@ async function apiRequest(endpoint, options = {})
     }
 }
 
-async function fetchAdminData()
-{
-    try
-    {
-        const response = await fetch('/admin', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-            }
-        });
-
-        if (!response.ok)
-        {
-            throw new Error(`Failed to fetch admin data: ${ response.statusText }`);
-        }
-
-        const data = await response.json();
-        console.log('Admin data:', data);
-        return data;
-    } 
-    catch (err)
-    {
-        console.error(err.message);
-        alert('Unable to fetch admin data. Please try again.');
-    }
-}
-
 /**
  * Fetch user info and update DOM elements.
  */
@@ -105,10 +77,8 @@ async function fetchUserInfoAndInject()
 
 document.getElementById('adminPanelLink').addEventListener('click', async () =>
 {
-    const adminData = await fetchAdminData();
-    if (adminData && adminData.isAdmin)    
-        window.location.href = '/admin';
-    else    
+    const adminData = await apiRequest('/admin', { method: 'GET' });;
+    if (!adminData || !adminData.isAdmin)       
         alert('Access Denied. You do not have admin privileges.');    
 });
 
