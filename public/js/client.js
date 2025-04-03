@@ -12,7 +12,7 @@ async function apiRequest(endpoint, options = {})
             ...options,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ localStorage.getItem('authToken') }`,
+                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
                 ...options.headers
             }
         });
@@ -75,14 +75,6 @@ async function fetchUserInfoAndInject()
     }
 }
 
-// document.getElementById('adminPanelLink').addEventListener('click', async () =>
-// {
-//     const adminData = await apiRequest('/admin', { method: 'GET' });;
-//     if (!adminData || !adminData.isAdmin)
-//         alert('Access Denied. You do not have admin privileges.');    
-// });
-
-
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const pageId = document.body.id;
@@ -91,18 +83,17 @@ document.addEventListener('DOMContentLoaded', async () =>
         await fetchUserInfoAndInject();
     }
 
-    if (pageId === 'admin-page')
+    const adminButton = document.getElementById('adminPanelLink');
+    if (adminButton)
     {
-        const adminData = await await apiRequest('/admin', { method: 'GET' });;
-        if (adminData && adminData.isAdmin)
+        adminButton.addEventListener('click', async () =>
         {
-            console.log('Welcome Admin:', adminData.username);
-            // Display admin-specific data or update the UI
-        } else
-        {
-            alert('Access Denied. You are not an admin.');
-            window.location.href = '/';
-        }
+            const data = await apiRequest('/admin', { method: 'GET' });
+            if (data && data.isAdmin)            
+                window.location.href = '/admin';
+            else            
+                alert('You are not authorized to access this page.');            
+        });
     }
 
     // Handle forgot password modal
