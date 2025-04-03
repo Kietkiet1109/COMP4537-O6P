@@ -43,7 +43,7 @@ async function makeApiRequest(endpoint, options = {})
     } catch (err)
     {
         console.error(`API request failed (${ endpoint }):`, err.message);
-        alert(err.message || 'An unexpected error occurred. Please try again.');
+        // alert(err.message || 'An unexpected error occurred. Please try again.');
         return null;
     }
 }
