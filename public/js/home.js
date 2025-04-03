@@ -19,11 +19,38 @@ function getAuthHeaders(req)
     return { Authorization: `Bearer ${ token }` };
 }
 
-async function makeApiRequest(endpoint, options = {})
-{
-    try
-    {
-        const response = await fetch(`${ API_BASE }${ endpoint }`, {
+// async function makeApiRequest(endpoint, options = {})
+// {
+//     try
+//     {
+//         const response = await fetch(`${ API_BASE }${ endpoint }`, {
+//             ...options,
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
+//                 ...options.headers
+//             }
+//         });
+
+//         const data = await response.json();
+
+//         if (!response.ok)
+//         {
+//             throw new Error(data.message || 'API request failed');
+//         }
+
+//         return data;
+//     } catch (err)
+//     {
+//         console.error(`API request failed (${ endpoint }):`, err.message);
+//         // alert(err.message || 'An unexpected error occurred. Please try again.');
+//         return null;
+//     }
+// }
+
+async function makeApiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
@@ -34,17 +61,14 @@ async function makeApiRequest(endpoint, options = {})
 
         const data = await response.json();
 
-        if (!response.ok)
-        {
+        if (!response.ok) {
             throw new Error(data.message || 'API request failed');
         }
 
         return data;
-    } catch (err)
-    {
-        console.error(`API request failed (${ endpoint }):`, err.message);
-        // alert(err.message || 'An unexpected error occurred. Please try again.');
-        return null;
+    } catch (err) {
+        console.error(`API request failed (${endpoint}):`, err.message);
+        return { success: false, message: err.message };  // Return a default object with failure status
     }
 }
 
