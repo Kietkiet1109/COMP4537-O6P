@@ -122,8 +122,6 @@ document.addEventListener('DOMContentLoaded', async () =>
 
             if (!response.ok)            
                return alert(`Failed to fetch admin data: ${ response.statusText }`);
-
-            window.location.href = '/admin';
         });
     }
 
