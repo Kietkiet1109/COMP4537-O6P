@@ -32,7 +32,8 @@ router.get('/home', async (req, res) => {
 // 🔹 Admin Dashboard (Protected)
 router.get('/admin', async (req, res) => {
     try {
-        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
+        console.log("Checking admin status...");
+        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
         console.log("Am I an admin: " + result.data.isAdmin);
         res.render('admin', {
             username: result.data.username,
@@ -50,7 +51,7 @@ router.get('/admin', async (req, res) => {
 // 🔹 Admin Search (Protected)
 router.get('/admin/search', async (req, res) => {
     try {
-        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(), params: { username: req.query.username } });
+        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req), params: { username: req.query.username } });
         res.render('admin',
             {
                 username: result.data.username,
@@ -68,7 +69,7 @@ router.get('/admin/search', async (req, res) => {
 // 🔹 Toggle Admin Status (Protected)
 router.post('/admin/toggle-admin', async (req, res) => {
     try {
-        const result = await axios.patch(`${API_BASE}/admin`, req.body, { headers: getAuthHeaders() });
+        const result = await axios.patch(`${API_BASE}/admin`, req.body, { headers: getAuthHeaders(req) });
         res.status(200).json(result.data);
     }
     catch (err) {
