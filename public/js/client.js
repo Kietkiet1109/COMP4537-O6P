@@ -82,6 +82,24 @@ async function fetchUserInfoAndInject()
 //         alert('Access Denied. You do not have admin privileges.');    
 // });
 
+document.getElementById('adminPanelLink').addEventListener('click', async () => {
+    // Retrieve the JWT token (usually from localStorage, sessionStorage, or cookies)
+    const token = localStorage.getItem('jwtToken'); // or sessionStorage.getItem('jwtToken') or cookie
+
+    // Send the token in the Authorization header
+    const adminData = await apiRequest('/admin', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`, // Add the JWT token to the Authorization header
+        }
+    });
+
+    // Check if the user has admin privileges
+    if (!adminData || !adminData.isAdmin) {
+        alert('Access Denied. You do not have admin privileges.');
+    }
+});
+
 
 document.addEventListener('DOMContentLoaded', async () =>
 {
