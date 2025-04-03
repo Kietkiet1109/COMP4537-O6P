@@ -35,13 +35,7 @@ router.get('/home', async (req, res) => {
 router.get('/admin', async (req, res) => {
     try {
         console.log("Checking admin status...");
-        // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
-        try {
-            const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
-            console.log("Admin Route Response:", result.data);
-        } catch (err) {
-            console.error("Admin route failed:", err.response?.status, err.response?.data);
-        }
+        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
         console.log("Am I an admin: " + result.data.isAdmin);
         res.render('admin', {
             username: result.data.username,
