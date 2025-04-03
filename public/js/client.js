@@ -99,6 +99,7 @@ document.getElementById('adminPanelLink').addEventListener('click', async () => 
         if (adminData.isAdmin) {
             // Grant access to the admin panel
             alert('Welcome Admin!');
+            window.location.href = '/admin';
         } else {
             alert('Access Denied. You do not have admin privileges.');
         }
