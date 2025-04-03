@@ -66,9 +66,6 @@ ev3Client.on('data', (data) => {
     });
 });
 
-// WebSocket server setup
-const wss = new WebSocket.Server({ port: 3002 });
-
 wss.on('connection', (ws) => {
     console.log("Web client connected");
 
