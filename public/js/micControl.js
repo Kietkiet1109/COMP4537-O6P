@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async function ()
                         }
 
                         // Retrieve user details from the server
-                        const response = await fetch('/api/v3/currentUser', {
+                        const response = await fetch('https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3/currentUser', {
                             method: 'GET',
                             headers: {
                                 "Authorization": `Bearer ${ localStorage.getItem("authToken") }`
