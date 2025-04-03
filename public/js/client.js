@@ -124,11 +124,13 @@ document.addEventListener('DOMContentLoaded', async () =>
                 const users = await apiRequest('/getUsers', { method: 'GET' });             
                 const stats = await apiRequest('/getStats', { method: 'GET' });    
 
+                console.log('Users:', JSON.stringify({ users }));
+                console.log('Stats:', JSON.stringify({ stats }));
                 const queryParams = new URLSearchParams({
                     username: data.user.username,
                     isAdmin: data.user.isAdmin,
-                    users: JSON.stringify({ users }).users,
-                    apiStats: JSON.stringify({ stats }).apiStats,
+                    users: JSON.stringify({ users }),
+                    apiStats: JSON.stringify({ stats }),
                 }).toString();
 
                 // Only navigate AFTER successful fetch
