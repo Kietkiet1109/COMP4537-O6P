@@ -135,8 +135,8 @@ document.addEventListener('DOMContentLoaded', async () =>
                 const queryParams = new URLSearchParams({
                     username: data.user.username,
                     isAdmin: data.user.isAdmin,
-                    users: await users.json(),
-                    apiStats: await stats.json(),
+                    users: users,
+                    apiStats: stats,
                 }).toString();
 
                 // Only navigate AFTER successful fetch
