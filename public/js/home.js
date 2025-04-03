@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 // 🔹 Home Page
 router.get('/home', async (req, res) => {
     res.render('home', { pageId: 'home-page', isAdmin: false });
-    // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
+    // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
 
@@ -79,7 +79,7 @@ router.post('/admin/toggle-admin', async (req, res) => {
 // 🔹 Delete User (Protected)
 router.delete('/admin/delete-user', async (req, res) => {
     try {
-        const result = await axios.delete(`${API_BASE}/admin`, { headers: getAuthHeaders(), data: req.body });
+        const result = await axios.delete(`${ API_BASE }/admin`, { headers: getAuthHeaders(req), data: req.body });
         res.status(200).json(result.data);
     }
     catch (err) {
