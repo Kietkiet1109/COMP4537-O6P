@@ -39,28 +39,57 @@ app.get('*', (req, res) => res.status(404).render('404'));
 
 // Connect to the EV3 server
 const ev3Client = new net.Socket();
-ev3Client.connect(process.env.EV3_PORT, process.env.EV3_HOST, () => {
-    console.log(`Connected to EV3 at ${process.env.EV3_HOST}:${process.env.EV3_PORT}`);
+
+// Flag to check if EV3 connection is established
+let ev3Connected = false;
+
+// Try to connect to the EV3
+ev3Client.connect(EV3_PORT, EV3_HOST, () => {
+    console.log(`Connected to EV3 at ${EV3_HOST}:${EV3_PORT}`);
+    ev3Connected = true;  // Set flag to true once connected
 });
 
+// Handle connection errors
 ev3Client.on('error', (err) => {
     console.error('EV3 connection error:', err.message);
+    ev3Connected = false;  // Set flag to false if there is an error
 });
 
-// WebSocket connection handling
+// Handle data received from EV3 and send to WebSocket clients
+ev3Client.on('data', (data) => {
+    console.log("Received from EV3:", data.toString());
+    // Forward the data to all WebSocket clients
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(data.toString());
+        }
+    });
+});
+
+// WebSocket server setup
+const wss = new WebSocket.Server({ port: 3002 });
+
 wss.on('connection', (ws) => {
     console.log("Web client connected");
 
     // Handle messages from the web client
     ws.on('message', (message) => {
         console.log("Received from web client:", message.toString('utf-8'));
-        ev3Client.write(message.toString('utf-8'));
-    });
-
-    // Receive data from EV3 and forward to the web client
-    ev3Client.on('data', (data) => {
-        console.log("Received from EV3:", data.toString());
-        ws.send(data.toString());
+        
+        // Check if EV3 is connected before writing data
+        if (ev3Connected) {
+            // Send the message to EV3
+            ev3Client.write(message.toString('utf-8'), (err) => {
+                if (err) {
+                    console.error("Error sending to EV3:", err.message);
+                } else {
+                    console.log("Message sent to EV3");
+                }
+            });
+        } else {
+            console.error("Cannot send message to EV3: Not connected");
+            ws.send("Error: EV3 is not connected");
+        }
     });
 
     // Handle WebSocket disconnection
