@@ -90,30 +90,30 @@ router.get('/home', async (req, res) => {
 });
 
 // 🔹 Admin Dashboard (Protected)
-router.get('/admin', async (req, res) =>
+router.post('/admin', async (req, res) =>
 {
     try
     {
         console.log("Checking admin status...");
 
-        // Extract query parameters from the request
-        const params = req.body;
-        
+        // Extract data from request body (POST supports body)
+        const { username, isAdmin, users, apiStats } = req.body;
 
         res.render('admin', {
-            username: params.username,
-            isAdmin: params.isAdmin,
-            users: params.users || [],
-            apiStats: params.apiStats || [],
+            username,
+            isAdmin,
+            users: users || [], // Default to empty array
+            apiStats: apiStats || [],
             pageId: 'admin-page'
         });
-    } 
+    }
     catch (err)
     {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 // router.get('/admin', async (req, res) => {
 //     try {
 //         console.log("Checking admin status...");

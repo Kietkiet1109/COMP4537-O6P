@@ -92,44 +92,45 @@ document.addEventListener('DOMContentLoaded', async () =>
     }
 
     const adminButton = document.getElementById('adminPanelLink');
+
     if (adminButton)
     {
         adminButton.addEventListener('click', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
 
-            if (!data)
+            if (!data)            
                 alert('data is undefined');
-            else if (!data.user.isAdmin)
-                alert('data.user.isAdmin is undefined');
 
-            if (data && data.user.isAdmin)
-            {
-                // Fetch admin data with headers and query parameters
-                const response = await fetch(`/admin`, 
-                {
-                    method: 'GET',
-                    headers: 
-                    {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-                    },
-                    body: 
-                    { 
-                        username: data.user.username,
-                        isAdmin: data.user.isAdmin,
-                        users: [],
-                        apiStats: [],
-                    }
-                });    
-                if (!response.ok)                
-                    return alert(`Failed to fetch admin data: ${ response.statusText }`);                         
-            } 
-            else            
-                alert(`You are not authorized to access this page. ${JSON.stringify(data)}`);
-            
+            if (!data.user.isAdmin)            
+                alert('You are not authorized to access this page.');
+
+            // Fetch admin data using POST (since GET cannot have a body)
+            const response = await fetch(`/admin`, {
+                method: 'POST', // Changed from GET to POST
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+                },
+                body: JSON.stringify({  // Convert data to JSON
+                    username: data.user.username,
+                    isAdmin: data.user.isAdmin,
+                    users: [],
+                    apiStats: []
+                })
+            });
+
+            if (!response.ok)            
+               return alert(`Failed to fetch admin data: ${ response.statusText }`);
+
+            // If the response is HTML (rendered page), navigate to it
+            const result = await response.text();
+            document.open();
+            document.write(result);
+            document.close();
         });
     }
+
 
 
     // Handle forgot password modal
