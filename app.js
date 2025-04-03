@@ -44,8 +44,8 @@ const ev3Client = new net.Socket();
 let ev3Connected = false;
 
 // Try to connect to the EV3
-ev3Client.connect(EV3_PORT, EV3_HOST, () => {
-    console.log(`Connected to EV3 at ${EV3_HOST}:${EV3_PORT}`);
+ev3Client.connect(process.env.EV3_PORT, process.env.EV3_HOST, () => {
+    console.log(`Connected to EV3 at ${process.env.EV3_HOST}:${process.env.EV3_PORT}`);
     ev3Connected = true;  // Set flag to true once connected
 });
 
