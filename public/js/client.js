@@ -123,11 +123,7 @@ document.addEventListener('DOMContentLoaded', async () =>
             if (!response.ok)            
                return alert(`Failed to fetch admin data: ${ response.statusText }`);
 
-            // If the response is HTML (rendered page), navigate to it
-            const result = await response.text();
-            document.open();
-            document.write(result);
-            document.close();
+            window.location.href = '/admin';
         });
     }
 
