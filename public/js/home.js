@@ -90,14 +90,14 @@ router.get('/home', async (req, res) => {
 });
 
 // 🔹 Admin Dashboard (Protected)
-router.post('/admin', async (req, res) =>
+router.get('/admin', async (req, res) =>
 {
     try
     {
         console.log("Checking admin status...");
-
-        // Extract data from request body (POST supports body)
-        const { username, isAdmin, users, apiStats } = req.body;
+        const data = await makeApiRequest('/admin', { method: 'GET', options: {} });
+        
+        const { username, isAdmin, users, apiStats } = data;
 
         res.render('admin', {
             username,
