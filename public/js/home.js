@@ -17,6 +17,7 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', async (req, res) => {
+    console.log("Am I an admin: ");
     res.render('home', { pageId: 'home-page', isAdmin: false });
     // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
