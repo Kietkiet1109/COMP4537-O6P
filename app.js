@@ -14,7 +14,13 @@ app.use((req, res, next) =>
 {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    res.setHeader("Content-Security-Policy", "default-src 'self'; font-src 'self' https://comp4537-project-5ddxc.ondigitalocean.app/admin;");
+    res.setHeader("Content-Security-Policy",
+        "default-src 'self'; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+        "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
+        "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
+    );
     next();
 });
 
