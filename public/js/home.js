@@ -95,13 +95,17 @@ router.get('/admin', async (req, res) =>
         console.log("Checking admin status...");
         const params = req.query;
         console.log("Received query parameters:", params);
-
+        const result = await axios.get(`${ process.env.API_BASE }/admin`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ params.token }`
+            } });
         // Ensure query params are handled safely
         res.render('admin', {
             username: params.username || "Unknown User",
             isAdmin: params.isAdmin,
-            users: params.users ? JSON.parse(params.users) : [],
-            apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
+            users: result.users ? JSON.parse(result.users) : [],
+            apiStats: result.apiStats ? JSON.parse(result.apiStats) : [],
             searchResult: null,
             searchAttempted: false,
             pageId: 'admin-page'
