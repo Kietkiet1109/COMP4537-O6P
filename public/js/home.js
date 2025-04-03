@@ -112,6 +112,8 @@ router.get('/admin', async (req, res) =>
             isAdmin: params.isAdmin === "true",
             users: params.users ? JSON.parse(params.users) : [],
             apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
+            searchResult: null,
+            searchAttempted: true,
             pageId: 'admin-page'
         });
 
