@@ -96,7 +96,15 @@ document.addEventListener('DOMContentLoaded', async () =>
         adminButton.addEventListener('click', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
-            if (data && data.isAdmin)
+            if (!data || !data.user)
+            {
+                console.warn('Not authenticated');
+                window.location.href = '/';
+                return;
+            }
+            const {isAdmin } = data.user;
+            
+            if (isAdmin)
                 window.location.href = '/admin';
             else
                 alert('You are not authorized to access this page.');
