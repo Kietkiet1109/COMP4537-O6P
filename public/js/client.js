@@ -1,4 +1,5 @@
 const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
+const port = 3002;
 
 /**
  * Reusable API request function.
@@ -75,6 +76,27 @@ async function fetchUserInfoAndInject()
     }
 }
 
+// Initialize WebSocket connection
+function connectToEV3() {
+    ws = new WebSocket(`ws://localhost:${port}`);
+
+    ws.onopen = () => {
+        console.log('Connected to EV3 WebSocket');
+    };
+
+    ws.onmessage = (event) => {
+        console.log('Message from EV3:', event.data);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket connection closed');
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+}
+
 // document.getElementById('adminPanelLink').addEventListener('click', async () =>
 // {
 //     const adminData = await apiRequest('/admin', { method: 'GET' });;
@@ -92,7 +114,6 @@ document.addEventListener('DOMContentLoaded', async () =>
     }
 
     const adminButton = document.getElementById('adminPanelLink');
-
     if (adminButton)
     {
         adminButton.addEventListener('click', async () =>
@@ -269,6 +290,9 @@ document.addEventListener('DOMContentLoaded', async () =>
             }
         });
     }
+
+    // Call the connectToEV3 function to establish the WebSocket connection
+    connectToEV3();
 });
 
 // Prevent unnecessary page reloads

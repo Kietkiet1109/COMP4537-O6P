@@ -4,8 +4,8 @@ import sys
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
 from time import sleep
 
-HOST = '0.0.0.0'  # Listen on all interfaces
-PORT = 9999       # Pick a port to listen on
+HOST = '0.0.0.0'  # Listen on all interfaces # Change for each connection
+PORT = 8000       # Pick a port to listen on
 
 # Check connected motors
 connected_motors = []
@@ -36,8 +36,8 @@ else:
     
 def parse_command(command):
     try:
-        action, value = command.strip().lower().split(',')
-        return action.strip(), float(value.strip())
+        unused, action = command.strip().lower().split(' ')
+        return action.strip(), float(5)
     except Exception as e:
         print("Failed to parse command:", e)
         return None, None
@@ -50,10 +50,14 @@ def handle_command(command):
 
     print("Executing: {}, rotations: {}".format(action, rotations))
 
-    if action == "move forward":
+    if action == "forward":
         tank_drive.on_for_rotations(SpeedPercent(50), SpeedPercent(50), rotations)
-    elif action == "move backward":
+    elif action == "backward":
         tank_drive.on_for_rotations(SpeedPercent(-50), SpeedPercent(-50), rotations)
+    elif action == "left":
+        tank_drive.on_for_rotations(SpeedPercent(0), SpeedPercent(-50), rotations)
+    elif action == "right":
+        tank_drive.on_for_rotations(SpeedPercent(-50), SpeedPercent(0), rotations)        
     else:
         print("Unknown action")
 
@@ -74,4 +78,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             command = data.decode('utf-8')
             print("Received:", command)
             handle_command(command)
-
