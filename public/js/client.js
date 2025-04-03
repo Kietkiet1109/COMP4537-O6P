@@ -91,6 +91,20 @@ document.addEventListener('DOMContentLoaded', async () =>
         await fetchUserInfoAndInject();
     }
 
+    if (pageId === 'admin-page')
+    {
+        const adminData = await await apiRequest('/admin', { method: 'GET' });;
+        if (adminData && adminData.isAdmin)
+        {
+            console.log('Welcome Admin:', adminData.username);
+            // Display admin-specific data or update the UI
+        } else
+        {
+            alert('Access Denied. You are not an admin.');
+            window.location.href = '/';
+        }
+    }
+
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
     if (forgotPasswordButton)
