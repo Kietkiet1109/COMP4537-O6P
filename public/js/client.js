@@ -75,12 +75,12 @@ async function fetchUserInfoAndInject()
     }
 }
 
-document.getElementById('adminPanelLink').addEventListener('click', async () =>
-{
-    const adminData = await apiRequest('/admin', { method: 'GET' });;
-    if (!adminData || !adminData.isAdmin)       
-        alert('Access Denied. You do not have admin privileges.');    
-});
+// document.getElementById('adminPanelLink').addEventListener('click', async () =>
+// {
+//     const adminData = await apiRequest('/admin', { method: 'GET' });;
+//     if (!adminData || !adminData.isAdmin)
+//         alert('Access Denied. You do not have admin privileges.');    
+// });
 
 
 document.addEventListener('DOMContentLoaded', async () =>
