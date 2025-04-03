@@ -42,17 +42,23 @@ router.get('/admin', async (req, res) =>
         console.log("Checking admin status...");
         const params = req.query;
         console.log("Received query parameters:", params);
-        const result = await axios.get(`${ process.env.API_BASE }/getUsers`, {
+
+        const response = await axios.get(`${ process.env.API_BASE }/getUsers`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${ params.token }`
-            } });
-        // Ensure query params are handled safely
+            }
+        });
+
+        // Ensure `users` and `apiStats` are arrays before rendering
+        const users = Array.isArray(response.data.users) ? response.data.users : [];
+        const apiStats = Array.isArray(response.data.apiStats) ? response.data.apiStats : [];
+
         res.render('admin', {
             username: params.username || "Unknown User",
             isAdmin: params.isAdmin,
-            users: result.users ? JSON.stringify(result.users) : JSON.stringify(result.data.users),
-            apiStats: result.apiStats ? JSON.stringify(result.apiStats) : JSON.stringify(result.data.apiStats),
+            users: users, // Pass as an array, not a JSON string
+            apiStats: apiStats, // Pass as an array, not a JSON string
             searchResult: null,
             searchAttempted: false,
             pageId: 'admin-page'
@@ -64,6 +70,7 @@ router.get('/admin', async (req, res) =>
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 
 
 
