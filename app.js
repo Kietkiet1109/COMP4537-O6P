@@ -14,7 +14,6 @@ app.use((req, res, next) =>
 {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    res.setHeader("Content-Security-Policy", "font-src 'self' https://comp4537-project-5ddxc.ondigitalocean.app; default-src 'none';");
     next();
 });
 
