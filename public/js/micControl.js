@@ -1,8 +1,17 @@
-const User = require("../../../LegoControl/models/User");
-
 document.addEventListener("DOMContentLoaded", async function ()
 {
     const recordButton = document.getElementById("recordButton");
+
+    const response = await fetch('/api/v3/currentUser', {
+        method: 'GET',
+        headers: {"Authorization": `Bearer ${ localStorage.getItem("authToken") }` }
+    });
+
+    if (response.ok)    
+        console.log("User data:", await response.json());    
+    else    
+        console.error("Failed to fetch user data");    
+
 
     let recorder; // Recorder.js instance
     let audioContext; // AudioContext instance
