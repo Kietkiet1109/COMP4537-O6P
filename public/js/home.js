@@ -51,8 +51,8 @@ router.get('/admin', async (req, res) =>
         res.render('admin', {
             username: params.username || "Unknown User",
             isAdmin: params.isAdmin,
-            users: result.users ? JSON.stringify(result.users) : [],
-            apiStats: result.apiStats ? JSON.stringify(result.apiStats) : [],
+            users: result.users ? JSON.stringify(result.users) : JSON.stringify(result.data.users),
+            apiStats: result.apiStats ? JSON.stringify(result.apiStats) : JSON.stringify(result.data.apiStats),
             searchResult: null,
             searchAttempted: false,
             pageId: 'admin-page'
