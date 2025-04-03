@@ -61,7 +61,7 @@ async function makeApiRequest(endpoint, options = {}) {
 
         const data = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !data.success) {
             throw new Error(data.message || 'API request failed');
         }
 
@@ -94,7 +94,7 @@ router.get('/admin', async (req, res) => {
         console.log("Checking admin status...");
 
         // Call the adminSearch method to get the necessary data
-        const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {req}});
+        const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {}});
 
         // Check if the response is valid and contains the necessary data
         if (searchData.success) {
