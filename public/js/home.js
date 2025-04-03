@@ -98,13 +98,13 @@ router.get('/admin', async (req, res) =>
         console.log("Received query parameters:", params);
 
         // Set CSP Header **ONLY for the Admin Page**
-        res.setHeader("Content-Security-Policy",
-            "default-src 'self'; " +
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
-            "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
-        );
+        // res.setHeader("Content-Security-Policy",
+        //     "default-src 'self'; " +
+        //     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+        //     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+        //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
+        //     "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
+        // );
 
         // Ensure query params are handled safely
         res.render('admin', {
@@ -123,8 +123,6 @@ router.get('/admin', async (req, res) =>
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
-
-
 
 
 // router.get('/admin', async (req, res) => {
