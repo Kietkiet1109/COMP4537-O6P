@@ -101,7 +101,7 @@ router.get('/admin', async (req, res) =>
 
         res.render('admin', {
             username: params.username,
-            isAdmin: params.isAdmin === 'true', // Convert to boolean if needed
+            isAdmin: params.isAdmin, // Convert to boolean if needed
             users: params.users ? JSON.parse(params.users) : [], // Parse JSON if needed
             apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
             pageId: 'admin-page'

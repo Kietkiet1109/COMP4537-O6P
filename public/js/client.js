@@ -105,24 +105,28 @@ document.addEventListener('DOMContentLoaded', async () =>
             if (!data.user.isAdmin)            
                 alert('You are not authorized to access this page.');
 
+            // Fetch admin data using POST (since GET cannot have a body)
+
             const queryParams = new URLSearchParams({
                 username: data.user.username,
                 isAdmin: data.user.isAdmin
             }).toString();
 
-            const response = await fetch(`/admin?${ queryParams }`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-                }
-            });
+            window.location.href = `/admin?${ queryParams }`;
+            // const response = await fetch(`/admin?${ queryParams }`, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+            //     }
+            // });
 
             if (!response.ok)
                 return alert(`Failed to fetch admin data: ${ response.statusText }`);
 
             const result = await response.json();
             console.log(result);
+
         });
     }
 
