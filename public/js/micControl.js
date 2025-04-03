@@ -49,28 +49,27 @@ document.addEventListener("DOMContentLoaded", async function ()
                             audioPlayback.style.display = "block";
                         }
 
-                        // Retrieve user details from the server
-                        const response = await fetch('https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3/currentUser', {
-                            method: 'GET',
-                            headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`}
-                        });
-
-                        if (!response.ok)                        
-                            return alert("Unable to fetch user data.");                        
-
-                        const user = await response.json();
-
                         // Upload WAV to the server
                         const formData = new FormData();
-                        formData.append("audioFile", blob, "recording.wav");
-                        formData.append("key", user.apiKey); // Add API key to the request body
+                        formData.append("audioFile", blob, "recording.wav"); // Add audio file
+                        formData.append("apiKey", user.apiKey); // Add API key to the FormData
 
                         try
                         {
+                            const jwtToken = localStorage.getItem("authToken");
+                            if (!jwtToken)
+                            {
+                                alert("You are not logged in. Redirecting to login...");
+                                window.location.href = "/";
+                                return;
+                            }
+
                             const uploadResponse = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`},
-                                body: { formData, key: user.apiKey } // Include API key in the request body
+                                headers: {
+                                    "Authorization": `Bearer ${ jwtToken }` // Include JWT token
+                                },
+                                body: formData // Send FormData with audio file and apiKey
                             });
 
                             if (uploadResponse.ok)
@@ -78,19 +77,18 @@ document.addEventListener("DOMContentLoaded", async function ()
                                 const result = await uploadResponse.json();
                                 document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
                                 alert("WAV uploaded successfully!");
-                            } 
-                            else
+                            } else
                             {
                                 console.error("Failed to upload WAV:", uploadResponse.status, uploadResponse.statusText);
                                 alert("WAV upload failed!");
                             }
-                        } 
-                        catch (uploadError)
+                        } catch (uploadError)
                         {
                             console.error("Error uploading WAV:", uploadError);
                             alert("An error occurred during upload.");
                         }
                     });
+
 
                     this.innerText = "Start Recording";
                     this.classList.replace("btn-danger", "btn-primary");
