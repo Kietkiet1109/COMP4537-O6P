@@ -1,19 +1,25 @@
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async function ()
+{
     const recordButton = document.getElementById("recordButton");
 
     let recorder; // Recorder.js instance
     let audioContext; // AudioContext instance
     let isRecording = false;
 
-    if (recordButton) {
-        recordButton.addEventListener("click", async function () {
-            try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (recordButton)
+    {
+        recordButton.addEventListener("click", async function ()
+        {
+            try
+            {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+                {
                     alert("Your browser does not support audio recording.");
                     return;
                 }
 
-                if (!isRecording) {
+                if (!isRecording)
+                {
                     // Start recording
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -26,18 +32,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                     console.log("Recording started.");
                     this.innerText = "Stop Recording";
                     this.classList.replace("btn-primary", "btn-danger");
-                } else {
+                } else
+                {
                     // Stop recording and process the WAV file
                     recorder.stop();
                     isRecording = false;
                     console.log("Recording stopped.");
 
-                    recorder.exportWAV(async (blob) => {
+                    recorder.exportWAV(async (blob) =>
+                    {
                         const wavUrl = URL.createObjectURL(blob);
 
                         // Play WAV audio
                         const audioPlayback = document.getElementById("audioPlayback");
-                        if (audioPlayback) {
+                        if (audioPlayback)
+                        {
                             audioPlayback.src = wavUrl;
                             audioPlayback.style.display = "block";
                         }
@@ -46,21 +55,38 @@ document.addEventListener("DOMContentLoaded", async function () {
                         const formData = new FormData();
                         formData.append("audioFile", blob, "recording.wav");
 
-                        try {
+                        try
+                        {
+                            // Retrieve JWT token from localStorage
+                            const jwtToken = localStorage.getItem("authToken");
+                            if (!jwtToken)
+                            {
+                                alert("You are not logged in. Redirecting to login...");
+                                window.location.href = "/";
+                                return;
+                            }
+
+                            // Send POST request with Authorization header
                             const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                body: formData
+                                headers: {
+                                    "Authorization": `Bearer ${ jwtToken }`, // Include JWT token
+                                },
+                                body: formData // Attach FormData with the audio file
                             });
 
-                            if (response.ok) {
+                            if (response.ok)
+                            {
                                 const result = await response.json();
-                                document.getElementById("result").innerHTML = `Command: ${result.transcription}`;
+                                document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
                                 alert("WAV uploaded successfully!");
-                            } else {
+                            } else
+                            {
                                 console.error("Failed to upload WAV:", response.status, response.statusText);
                                 alert("WAV upload failed!");
                             }
-                        } catch (uploadError) {
+                        } catch (uploadError)
+                        {
                             console.error("Error uploading WAV:", uploadError);
                             alert("An error occurred during upload.");
                         }
@@ -69,7 +95,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     this.innerText = "Start Recording";
                     this.classList.replace("btn-danger", "btn-primary");
                 }
-            } catch (err) {
+            } 
+            catch (err)
+            {
                 console.error("Error during recording:", err);
                 alert("An error occurred. Please check your microphone permissions and try again.");
             }
