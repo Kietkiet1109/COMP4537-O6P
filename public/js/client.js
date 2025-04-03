@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () =>
             if (!data)
                 alert('data is undefined');
             else if (!data.user.isAdmin)
-                alert('data.isAdmin is undefined');
+                alert('data.user.isAdmin is undefined');
 
             if (data && data.user.isAdmin)
             {
