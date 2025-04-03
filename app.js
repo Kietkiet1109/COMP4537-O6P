@@ -53,8 +53,8 @@ wss.on('connection', (ws) => {
 
     // Handle messages from the web client
     ws.on('message', (message) => {
-        console.log("Received from web client:", message);
-        ev3Client.write(message);
+        console.log("Received from web client:", message.toString('utf-8'));
+        ev3Client.write(message.toString('utf-8'));
     });
 
     // Receive data from EV3 and forward to the web client
