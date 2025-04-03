@@ -119,20 +119,44 @@ document.addEventListener('DOMContentLoaded', async () =>
         adminButton.addEventListener('click', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
-            if (!data || !data.user)
+
+            if (!data) return alert('data is undefined');
+            if (!data.user.isAdmin) return alert('You are not authorized to access this page.');
+
+            const queryParams = new URLSearchParams({
+                username: data.user.username,
+                isAdmin: data.user.isAdmin
+            }).toString();
+
+            try
             {
-                console.warn('Not authenticated');
-                window.location.href = '/';
-                return;
+                const response = await fetch(`/admin?${ queryParams }`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+                    }
+                });
+
+                if (!response.ok)
+                {
+                    throw new Error(`Failed to fetch admin data: ${ response.statusText }`);
+                }
+
+                const result = await response.json();
+                console.log('Admin Data:', result);
+
+                // Only navigate AFTER successful fetch
+                window.location.href = `/admin?${ queryParams }`;
+            } catch (err)
+            {
+                console.error('Error accessing admin panel:', err.message);
+                alert('Error fetching admin data.');
             }
-            const {isAdmin } = data.user;
-            
-            if (isAdmin)
-                window.location.href = '/admin';
-            else
-                alert('You are not authorized to access this page.');
         });
     }
+
+
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
