@@ -37,23 +37,30 @@ router.get('/home', async (req, res) => {
 });
 
 // 🔹 Admin Dashboard (Protected)
-router.get('/admin', async (req, res) => {
-    try {
+router.get('/admin', async (req, res) =>
+{
+    try
+    {
         console.log("Checking admin status...");
-        const result = await axios.get(`${ API_BASE}/currentUser`, { headers: getAuthHeaders(req) });
-        console.log("Am I an admin: " + result.data.isAdmin);
+
+        // Extract query parameters from the request
+        const params = req.body;
+        
+
         res.render('admin', {
-            username: result.data.username,
-            isAdmin: result.data.isAdmin,
-            users: result.data.users || [],
-            apiStats: result.data.apiStats || [],
+            username: params.username,
+            isAdmin: params.isAdmin,
+            users: params.users || [],
+            apiStats: params.apiStats || [],
             pageId: 'admin-page'
         });
-    } catch (err) {
+    } catch (err)
+    {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 
 // 🔹 Admin Search (Protected)
 router.get('/admin/search', async (req, res) => {

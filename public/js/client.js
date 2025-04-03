@@ -96,12 +96,35 @@ document.addEventListener('DOMContentLoaded', async () =>
         adminButton.addEventListener('click', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
+
             if (data && data.isAdmin)
-                window.location.href = '/admin';
-            else
+            {
+                // Fetch admin data with headers and query parameters
+                const response = await fetch(`/admin`, 
+                {
+                    method: 'GET',
+                    headers: 
+                    {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+                    },
+                    body: 
+                    { 
+                        username: data.user.username,
+                        isAdmin: data.user.isAdmin,
+                        users: [],
+                        apiStats: [],
+                    }
+                });    
+                if (!response.ok)                
+                    return alert(`Failed to fetch admin data: ${ response.statusText }`);                         
+            } 
+            else            
                 alert('You are not authorized to access this page.');
+            
         });
     }
+
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
