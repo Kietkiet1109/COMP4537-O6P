@@ -138,7 +138,37 @@ document.addEventListener('DOMContentLoaded', async () =>
         });
     }
 
+    const adminSearch = document.getElementById('adminSearchButton');
+    if (adminSearch)
+    {
+        adminSearch.addEventListener('click', async () =>
+        {
+            const data = await apiRequest('/currentUser', { method: 'GET' });
 
+            if (!data)
+                return alert('data is undefined');
+
+            if (!data.user.isAdmin)
+                return alert('You are not authorized to access this page.');
+
+            try
+            {
+                const queryParams = new URLSearchParams({
+                    username: data.user.username,
+                    isAdmin: data.user.isAdmin,
+                    token: localStorage.getItem("authToken"),
+                }).toString();
+
+                // Only navigate AFTER successful fetch
+                window.location.href = `/admin/search?${ queryParams }`;
+            }
+            catch (err)
+            {
+                console.log('Error fetching admin data:', err);
+                alert(`Error fetching admin data: ${ err.message }`);
+            }
+        });
+    }
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');

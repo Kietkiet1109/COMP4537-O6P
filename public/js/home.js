@@ -18,59 +18,6 @@ function getAuthHeaders(req)
     return { Authorization: `Bearer ${ token }` };
 }
 
-// async function makeApiRequest(endpoint, options = {})
-// {
-//     try
-//     {
-//         const response = await fetch(`${ process.env.API_BASE }${ endpoint }`, {
-//             ...options,
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
-//                 ...options.headers
-//             }
-//         });
-
-//         const data = await response.json();
-
-//         if (!response.ok)
-//         {
-//             throw new Error(data.message || 'API request failed');
-//         }
-
-//         return data;
-//     } catch (err)
-//     {
-//         console.error(`API request failed (${ endpoint }):`, err.message);
-//         // alert(err.message || 'An unexpected error occurred. Please try again.');
-//         return null;
-//     }
-// }
-
-async function makeApiRequest(endpoint, options = {}) {
-    try {
-        const response = await fetch(`${process.env.API_BASE}${endpoint}`, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
-                ...options.headers
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || 'API request failed');
-        }
-
-        return data;
-    } catch (err) {
-        console.error(`API request failed (${endpoint}):`, err.message);
-        return { success: false, message: err.message };  // Return a default object with failure status
-    }
-}
-
 // 🔹 Landing Page
 router.get('/', (req, res) => {
     res.render('index');
@@ -123,7 +70,15 @@ router.get('/admin', async (req, res) =>
 // 🔹 Admin Search (Protected)
 router.get('/admin/search', async (req, res) => {
     try {
-        const result = await axios.get(`${process.env.API_BASE}/admin`, { headers: getAuthHeaders(req), params: { username: req.query.username } });
+        const params = req.query;
+        console.log("Received query parameters:", params);
+
+        const result = await axios.get(`${ process.env.API_BASE }/admin`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ params.token }`
+            }, 
+            params: { username: req.query.username } });
         res.render('admin',
             {
                 username: result.data.username,
@@ -140,8 +95,14 @@ router.get('/admin/search', async (req, res) => {
 
 // 🔹 Toggle Admin Status (Protected)
 router.post('/admin/toggle-admin', async (req, res) => {
+    
     try {
-        const result = await axios.patch(`${process.env.API_BASE}/admin`, req.body, { headers: getAuthHeaders(req) });
+        const params = req.query;
+        const result = await axios.patch(`${ process.env.API_BASE }/admin`, req.body, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ params.token }`
+            }, });
         res.status(200).json(result.data);
     }
     catch (err) {
@@ -152,7 +113,12 @@ router.post('/admin/toggle-admin', async (req, res) => {
 // 🔹 Delete User (Protected)
 router.delete('/admin/delete-user', async (req, res) => {
     try {
-        const result = await axios.delete(`${ process.env.API_BASE }/admin`, { headers: getAuthHeaders(req), data: req.body });
+        const params = req.query;
+        const result = await axios.delete(`${ process.env.API_BASE }/admin`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ params.token }`
+            }, , data: req.body });
         res.status(200).json(result.data);
     }
     catch (err) {
