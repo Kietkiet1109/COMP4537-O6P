@@ -10,11 +10,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Cross-Origin headers (for features like audio processing)
-app.use((req, res, next) => {
+app.use((req, res, next) =>
+{
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    res.setHeader("Content-Security-Policy", "font-src 'self' https://comp4537-project-5ddxc.ondigitalocean.app; default-src 'none';");
     next();
 });
+
 
 // Middleware to parse requests and serve frontend files
 app.use(express.json());
