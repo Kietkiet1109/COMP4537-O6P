@@ -12,11 +12,8 @@ document.addEventListener("DOMContentLoaded", async function ()
         {
             try
             {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
-                {
-                    alert("Your browser does not support audio recording.");
-                    return;
-                }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)                
+                    return alert("Your browser does not support audio recording.");                
 
                 if (!isRecording)
                 {
@@ -32,7 +29,8 @@ document.addEventListener("DOMContentLoaded", async function ()
                     console.log("Recording started.");
                     this.innerText = "Stop Recording";
                     this.classList.replace("btn-primary", "btn-danger");
-                } else
+                } 
+                else
                 {
                     // Stop recording and process the WAV file
                     recorder.stop();
@@ -54,16 +52,11 @@ document.addEventListener("DOMContentLoaded", async function ()
                         // Retrieve user details from the server
                         const response = await fetch('https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3/currentUser', {
                             method: 'GET',
-                            headers: {
-                                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`
-                            }
+                            headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`}
                         });
 
-                        if (!response.ok)
-                        {
-                            alert("Unable to fetch user data.");
-                            return;
-                        }
+                        if (!response.ok)                        
+                            return alert("Unable to fetch user data.");                        
 
                         const user = await response.json();
 
@@ -76,10 +69,8 @@ document.addEventListener("DOMContentLoaded", async function ()
                         {
                             const uploadResponse = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                headers: {
-                                    "Authorization": `Bearer ${ localStorage.getItem("authToken") }`
-                                },
-                                body: formData
+                                headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`},
+                                body: { ...formData, key: user.apiKey } // Include API key in the request body
                             });
 
                             if (uploadResponse.ok)
@@ -87,12 +78,14 @@ document.addEventListener("DOMContentLoaded", async function ()
                                 const result = await uploadResponse.json();
                                 document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
                                 alert("WAV uploaded successfully!");
-                            } else
+                            } 
+                            else
                             {
                                 console.error("Failed to upload WAV:", uploadResponse.status, uploadResponse.statusText);
                                 alert("WAV upload failed!");
                             }
-                        } catch (uploadError)
+                        } 
+                        catch (uploadError)
                         {
                             console.error("Error uploading WAV:", uploadError);
                             alert("An error occurred during upload.");
@@ -102,7 +95,8 @@ document.addEventListener("DOMContentLoaded", async function ()
                     this.innerText = "Start Recording";
                     this.classList.replace("btn-danger", "btn-primary");
                 }
-            } catch (err)
+            } 
+            catch (err)
             {
                 console.error("Error during recording:", err);
                 alert("An error occurred. Please check your microphone permissions and try again.");
