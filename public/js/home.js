@@ -8,11 +8,9 @@ const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3
 function getAuthHeaders()
 {
     const token = localStorage.getItem('authToken'); // Ensure token exists
-    if (!token)
-    {
-        console.error("JWT token not found in localStorage.");
-        return {}; // Return empty headers to prevent invalid requests
-    }
+    if (!token)    
+        return console.error("JWT token not found in localStorage.");
+    
     return { Authorization: `Bearer ${ token }` };
 }
 
@@ -44,7 +42,7 @@ router.get('/admin', async (req, res) => {
         });
     } catch (err) {
         console.error('Admin route failed:', err.message);
-        res.status(err.response?.status || 500).send('Access Denied');
+        res.status(err.response?.status || 500).send('Access Denied bruhhh');
     }
 });
 
