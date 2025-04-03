@@ -118,7 +118,7 @@ router.delete('/admin/delete-user', async (req, res) => {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${ params.token }`
-            }, , data: req.body });
+            }, data: req.body });
         res.status(200).json(result.data);
     }
     catch (err) {
