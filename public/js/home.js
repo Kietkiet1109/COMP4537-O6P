@@ -70,16 +70,16 @@ router.get('/admin', async (req, res) => {
         console.log("Checking admin status...");
         
         // Fetch the current user data to check if they are an admin
-        const data = await apiRequest('/currentUser', { method: 'GET' });
+        const data = await makeApiRequest('/currentUser', { method: 'GET' });
         const { username, isAdmin } = data.user;
         console.log("Am I an admin: " + isAdmin);
 
         // Fetch the list of users
-        const usersResponse = await apiRequest('/users', { method: 'GET' });
+        const usersResponse = await makeApiRequest('/users', { method: 'GET' });
         const users = usersResponse.data.users || [];
 
         // Fetch the API usage stats
-        const statsResponse = await apiRequest('/api-stats', { method: 'GET' });
+        const statsResponse = await makeApiRequest('/api-stats', { method: 'GET' });
         const apiStats = statsResponse.data.apiStats || [];
 
         // Render the admin page with the data
