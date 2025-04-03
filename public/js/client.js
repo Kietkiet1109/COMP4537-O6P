@@ -33,6 +33,34 @@ async function apiRequest(endpoint, options = {})
     }
 }
 
+async function fetchAdminData()
+{
+    try
+    {
+        const response = await fetch('/admin', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+            }
+        });
+
+        if (!response.ok)
+        {
+            throw new Error(`Failed to fetch admin data: ${ response.statusText }`);
+        }
+
+        const data = await response.json();
+        console.log('Admin data:', data);
+        return data;
+    } 
+    catch (err)
+    {
+        console.error(err.message);
+        alert('Unable to fetch admin data. Please try again.');
+    }
+}
+
 /**
  * Fetch user info and update DOM elements.
  */
@@ -75,6 +103,20 @@ async function fetchUserInfoAndInject()
     }
 }
 
+document.getElementById('adminPanelLink').addEventListener('click', async (event) =>
+{
+    event.preventDefault();
+    const adminData = await fetchAdminData();
+    if (adminData && adminData.isAdmin)
+    {
+        window.location.href = '/admin';
+    } else
+    {
+        alert('Access Denied. You do not have admin privileges.');
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const pageId = document.body.id;
@@ -82,6 +124,22 @@ document.addEventListener('DOMContentLoaded', async () =>
     {
         await fetchUserInfoAndInject();
     }
+
+    if (pageId === 'admin-page')
+    {
+        const adminData = await fetchAdminData();
+        if (adminData && adminData.isAdmin)
+        {
+            console.log('Welcome Admin:', adminData.username);
+            // Display admin-specific data or update the UI
+        } 
+        else
+        {
+            alert('Access Denied. You are not an admin.');
+            window.location.href = '/home';
+        }
+    }
+
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
