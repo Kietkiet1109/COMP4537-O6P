@@ -14,7 +14,6 @@ function getAuthHeaders()
     return { Authorization: `Bearer ${ token }` };
 }
 
-
 // 🔹 Landing Page
 router.get('/', (req, res) => {
     res.render('index');
@@ -42,7 +41,7 @@ router.get('/admin', async (req, res) => {
         });
     } catch (err) {
         console.error('Admin route failed:', err.message);
-        res.status(err.response?.status || 500).send('Access Denied bruhhh');
+        res.status(err.response?.status || 500).send(`Access Denied bruhhh ${ err.message }`);
     }
 });
 
