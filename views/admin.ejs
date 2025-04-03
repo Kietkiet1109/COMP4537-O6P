@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             fetch('/admin/toggle-admin', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${ localStorage.getItem("authToken") }`, },
                 body: JSON.stringify({ userId, makeAdmin })
             }).then(response => response.json())
               .then(data => {
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (confirm("Are you sure you want to delete this user?")) {
                 fetch('/admin/delete-user', {
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${ localStorage.getItem("authToken") }`, },
                     body: JSON.stringify({ userId })
                 }).then(response => response.json())
                   .then(data => {
