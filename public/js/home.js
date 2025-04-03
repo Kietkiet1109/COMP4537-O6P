@@ -89,30 +89,41 @@ router.get('/home', async (req, res) => {
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
 
-// 🔹 Admin Dashboard (Protected)
 router.get('/admin', async (req, res) =>
 {
     try
     {
         console.log("Checking admin status...");
 
-        // Extract query parameters from the request
-        const params = req.query; // Change from req.body to req.query
+        // Extract query parameters safely
+        const params = req.query;
+        console.log("Received query parameters:", params);
 
+        // Set CSP Header **before** rendering the page
+        res.setHeader("Content-Security-Policy",
+            "default-src 'self'; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
+            "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
+        );
+
+        // Ensure query params are handled safely
         res.render('admin', {
-            username: params.username,
-            isAdmin: params.isAdmin, // Convert to boolean if needed
-            users: params.users ? JSON.parse(params.users) : [], // Parse JSON if needed
-            apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
+            username: params.username || "Unknown User",
+            isAdmin: params.isAdmin === "true", // Convert to boolean safely
+            users: params.users ? (Array.isArray(params.users) ? params.users : JSON.parse(params.users)) : [],
+            apiStats: params.apiStats ? (Array.isArray(params.apiStats) ? params.apiStats : JSON.parse(params.apiStats)) : [],
             pageId: 'admin-page'
         });
-    }
-    catch (err)
+
+    } catch (err)
     {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 
 
 // router.get('/admin', async (req, res) => {
