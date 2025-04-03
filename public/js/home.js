@@ -94,7 +94,7 @@ router.get('/admin', async (req, res) => {
         console.log("Checking admin status...");
 
         // Call the adminSearch method to get the necessary data
-        const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {req} });
+        const searchData = await makeApiRequest('/adminSearch', { method: 'GET'});
 
         // Check if the response is valid and contains the necessary data
         if (searchData.success) {
