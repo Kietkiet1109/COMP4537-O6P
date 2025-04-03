@@ -1,4 +1,5 @@
 const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
+const port = 3002;
 
 /**
  * Reusable API request function.
@@ -75,6 +76,27 @@ async function fetchUserInfoAndInject()
     }
 }
 
+// Initialize WebSocket connection
+function connectToEV3() {
+    ws = new WebSocket(`ws://localhost:${port}`);
+
+    ws.onopen = () => {
+        console.log('Connected to EV3 WebSocket');
+    };
+
+    ws.onmessage = (event) => {
+        console.log('Message from EV3:', event.data);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket connection closed');
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+}
+
 // document.getElementById('adminPanelLink').addEventListener('click', async () =>
 // {
 //     const adminData = await apiRequest('/admin', { method: 'GET' });;
@@ -92,45 +114,25 @@ document.addEventListener('DOMContentLoaded', async () =>
     }
 
     const adminButton = document.getElementById('adminPanelLink');
-
     if (adminButton)
     {
         adminButton.addEventListener('click', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
-
-            if (!data)            
-                alert('data is undefined');
-
-            if (!data.user.isAdmin)            
+            if (!data || !data.user)
+            {
+                console.warn('Not authenticated');
+                window.location.href = '/';
+                return;
+            }
+            const {isAdmin } = data.user;
+            
+            if (isAdmin)
+                window.location.href = '/admin';
+            else
                 alert('You are not authorized to access this page.');
-
-            // Fetch admin data using POST (since GET cannot have a body)
-
-            const queryParams = new URLSearchParams({
-                username: data.user.username,
-                isAdmin: data.user.isAdmin
-            }).toString();
-
-            window.location.href = `/admin?${ queryParams }`;
-            // const response = await fetch(`/admin?${ queryParams }`, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-            //     }
-            // });
-
-            if (!response.ok)
-                return alert(`Failed to fetch admin data: ${ response.statusText }`);
-
-            const result = await response.json();
-            console.log(result);
-
         });
     }
-
-
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
@@ -271,6 +273,9 @@ document.addEventListener('DOMContentLoaded', async () =>
             }
         });
     }
+
+    // Call the connectToEV3 function to establish the WebSocket connection
+    connectToEV3();
 });
 
 // Prevent unnecessary page reloads
