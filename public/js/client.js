@@ -84,7 +84,7 @@ async function fetchUserInfoAndInject()
 
 document.getElementById('adminPanelLink').addEventListener('click', async () => {
     // Retrieve the JWT token (usually from localStorage, sessionStorage, or cookies)
-    const token = localStorage.getItem('jwtToken'); // or sessionStorage.getItem('jwtToken') or cookie
+    const token = localStorage.getItem('authToken'); // or sessionStorage.getItem('jwtToken') or cookie
 
     // Send the token in the Authorization header
     const adminData = await apiRequest('/admin', {
