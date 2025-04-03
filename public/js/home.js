@@ -68,28 +68,28 @@ router.get('/home', async (req, res) => {
 router.get('/admin', async (req, res) => {
     try {
         console.log("Checking admin status...");
-        
-        // Fetch the current user data to check if they are an admin
-        const data = await makeApiRequest('/currentUser', { method: 'GET' });
-        const { username, isAdmin } = data.user;
-        console.log("Am I an admin: " + isAdmin);
 
-        // Fetch the list of users
-        const usersResponse = await makeApiRequest('/users', { method: 'GET' });
-        const users = usersResponse.data.users || [];
+        // Call the adminSearch method to get the necessary data
+        const searchData = await AdminController.adminSearch(req, res);
 
-        // Fetch the API usage stats
-        const statsResponse = await makeApiRequest('/api-stats', { method: 'GET' });
-        const apiStats = statsResponse.data.apiStats || [];
+        // Check if the response is valid and contains the necessary data
+        if (searchData.success) {
+            const { username, isAdmin, users, searchResult, searchAttempted, apiStats } = searchData;
 
-        // Render the admin page with the data
-        res.render('admin', {
-            username: username,
-            isAdmin: isAdmin,
-            users: users,
-            apiStats: apiStats,
-            pageId: 'admin-page'
-        });
+            // Render the admin page with the data returned from adminSearch
+            res.render('admin', {
+                username: username,
+                isAdmin: isAdmin,
+                users: users,
+                searchResult: searchResult,
+                searchAttempted: searchAttempted,
+                apiStats: apiStats,
+                pageId: 'admin-page'
+            });
+        } else {
+            // If the data fetch was unsuccessful, return an error
+            res.status(500).send("Error fetching admin data.");
+        }
     } catch (err) {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
