@@ -41,6 +41,8 @@ router.get('/admin', async (req, res) => {
             username: result.data.username,
             isAdmin: result.data.isAdmin,
             users: result.data.users,
+            apiStats: result.data.apiStats || [],
+            pageId: 'admin-page'
         });
     } catch (err) {
         console.error('Admin route failed:', err.message);
