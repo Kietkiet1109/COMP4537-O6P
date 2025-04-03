@@ -46,7 +46,7 @@ router.get('/admin', async (req, res) => {
         });
     } catch (err) {
         console.error('Admin route failed:', err.message);
-        res.status(err.response?.status || 500).send(`Access Denied bruhhh ${ err.message }`);
+        res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
 
