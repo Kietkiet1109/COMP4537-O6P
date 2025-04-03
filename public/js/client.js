@@ -108,11 +108,13 @@ document.addEventListener('DOMContentLoaded', async () =>
             // Fetch admin data using POST (since GET cannot have a body)
             const response = await fetch(`/admin`, {
                 method: 'POST', // Changed from GET to POST
-                headers: {
+                headers: 
+                {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
                 },
-                body: JSON.stringify({  // Convert data to JSON
+                body: JSON.stringify(
+                {  // Convert data to JSON
                     username: data.user.username,
                     isAdmin: data.user.isAdmin,
                     users: [],
