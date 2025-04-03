@@ -88,6 +88,42 @@ router.get('/home', async (req, res) => {
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
 
+// router.get('/admin', async (req, res) =>
+// {
+//     try
+//     {
+//         console.log("Checking admin status...");
+//         const params = req.query;
+//         console.log("Received query parameters:", params);
+
+//         // Set CSP Header **ONLY for the Admin Page**
+//         // res.setHeader("Content-Security-Policy",
+//         //     "default-src 'self'; " +
+//         //     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+//         //     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+//         //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
+//         //     "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
+//         // );
+
+//         // Ensure query params are handled safely
+//         res.render('admin', {
+//             username: params.username || "Unknown User",
+//             isAdmin: params.isAdmin === "true",
+//             users: params.users ? JSON.parse(params.users) : [],
+//             apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
+//             searchResult: null,
+//             searchAttempted: true,
+//             pageId: 'admin-page'
+//         });
+
+//     } catch (err)
+//     {
+//         console.error("Admin route failed:", err.message);
+//         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
+//     }
+// });
+
+
 router.get('/admin', async (req, res) =>
 {
     try
@@ -96,64 +132,22 @@ router.get('/admin', async (req, res) =>
         const params = req.query;
         console.log("Received query parameters:", params);
 
-        // Set CSP Header **ONLY for the Admin Page**
-        // res.setHeader("Content-Security-Policy",
-        //     "default-src 'self'; " +
-        //     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-        //     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
-        //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
-        //     "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
-        // );
-
-        // Ensure query params are handled safely
-        res.render('admin', {
+        res.setHeader("Content-Type", "application/json"); // Ensure response is JSON
+        res.json({
+            success: true,
             username: params.username || "Unknown User",
             isAdmin: params.isAdmin === "true",
             users: params.users ? JSON.parse(params.users) : [],
-            apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
-            searchResult: null,
-            searchAttempted: true,
-            pageId: 'admin-page'
+            apiStats: params.apiStats ? JSON.parse(params.apiStats) : []
         });
 
     } catch (err)
     {
         console.error("Admin route failed:", err.message);
-        res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 
-
-// router.get('/admin', async (req, res) => {
-//     try {
-//         console.log("Checking admin status...");
-
-//         // Call the adminSearch method to get the necessary data
-//         const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {}});
-
-//         // Check if the response is valid and contains the necessary data
-//         if (searchData.success) {
-//             const { username, isAdmin, users, searchResult, searchAttempted, apiStats } = searchData;
-
-//             // Render the admin page with the data returned from adminSearch
-//             res.render('admin', {
-//                 username: username,
-//                 isAdmin: isAdmin,
-//                 users: users,
-//                 searchResult: searchResult,
-//                 searchAttempted: searchAttempted,
-//                 apiStats: apiStats,
-//                 pageId: 'admin-page'
-//             });
-//         } else {
-//             // If the data fetch was unsuccessful, return an error
-//             res.status(500).send("Error fetching admin data.");
-//         }
-//     } catch (err) {
-//        console.error('Admin route failed:', err.message);
-//        res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
-//    }
-//});
 
 
 // 🔹 Admin Search (Protected)
