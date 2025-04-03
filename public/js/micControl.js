@@ -2,17 +2,6 @@ document.addEventListener("DOMContentLoaded", async function ()
 {
     const recordButton = document.getElementById("recordButton");
 
-    const response = await fetch('/api/v3/currentUser', {
-        method: 'GET',
-        headers: {"Authorization": `Bearer ${ localStorage.getItem("authToken") }` }
-    });
-
-    if (response.ok)    
-        console.log("User data:", await response.json());    
-    else    
-        console.error("Failed to fetch user data");    
-
-
     let recorder; // Recorder.js instance
     let audioContext; // AudioContext instance
     let isRecording = false;
@@ -62,44 +51,45 @@ document.addEventListener("DOMContentLoaded", async function ()
                             audioPlayback.style.display = "block";
                         }
 
+                        // Retrieve user details from the server
+                        const response = await fetch('/api/v3/currentUser', {
+                            method: 'GET',
+                            headers: {
+                                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`
+                            }
+                        });
+
+                        if (!response.ok)
+                        {
+                            alert("Unable to fetch user data.");
+                            return;
+                        }
+
+                        const user = await response.json();
+
                         // Upload WAV to the server
                         const formData = new FormData();
                         formData.append("audioFile", blob, "recording.wav");
+                        formData.append("key", user.apiKey); // Add API key to the request body
 
                         try
                         {
-                            // Retrieve JWT token from localStorage
-                            const jwtToken = localStorage.getItem("authToken");
-                            if (!jwtToken)
-                            {
-                                alert("You are not logged in. Redirecting to login...");
-                                window.location.href = "/";
-                                return;
-                            }
-                            const user = User.findById(jwtToken.userId); // Fetch user details (if needed)
-
-                            // Create FormData and add audio file
-                            const formData = new FormData();
-                            formData.append("audioFile", blob, "recording.wav"); // Add audio file
-                            formData.append("key", user.apiKey); // Add API key to the request body
-
-                            // Send POST request with Authorization header
-                            const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
+                            const uploadResponse = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                headers: { "Authorization": `Bearer ${ jwtToken }`}, // Attach JWT token
-                                body: { formData, "key": user.apiKey }  // Attach FormData with the audio file and API key
+                                headers: {
+                                    "Authorization": `Bearer ${ localStorage.getItem("authToken") }`
+                                },
+                                body: formData
                             });
 
-
-                            if (response.ok)
+                            if (uploadResponse.ok)
                             {
-                                const result = await response.json();
+                                const result = await uploadResponse.json();
                                 document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
                                 alert("WAV uploaded successfully!");
-                            } 
-                            else
+                            } else
                             {
-                                console.error("Failed to upload WAV:", response.status, response.statusText);
+                                console.error("Failed to upload WAV:", uploadResponse.status, uploadResponse.statusText);
                                 alert("WAV upload failed!");
                             }
                         } catch (uploadError)
@@ -112,8 +102,7 @@ document.addEventListener("DOMContentLoaded", async function ()
                     this.innerText = "Start Recording";
                     this.classList.replace("btn-danger", "btn-primary");
                 }
-            } 
-            catch (err)
+            } catch (err)
             {
                 console.error("Error during recording:", err);
                 alert("An error occurred. Please check your microphone permissions and try again.");
