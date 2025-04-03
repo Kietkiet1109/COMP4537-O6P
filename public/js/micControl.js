@@ -1,3 +1,5 @@
+const User = require("../../../LegoControl/models/User");
+
 document.addEventListener("DOMContentLoaded", async function ()
 {
     const recordButton = document.getElementById("recordButton");
@@ -65,6 +67,12 @@ document.addEventListener("DOMContentLoaded", async function ()
                                 window.location.href = "/";
                                 return;
                             }
+                            const user = User.findById(jwtToken.userId); // Fetch user details (if needed)
+
+                            // Create FormData and add audio file
+                            const formData = new FormData();
+                            formData.append("audioFile", blob, "recording.wav"); // Add audio file
+                            formData.append("key", user.apiKey); // Add API key to the request body
 
                             // Send POST request with Authorization header
                             const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
@@ -72,8 +80,9 @@ document.addEventListener("DOMContentLoaded", async function ()
                                 headers: {
                                     "Authorization": `Bearer ${ jwtToken }`, // Include JWT token
                                 },
-                                body: formData // Attach FormData with the audio file
+                                body: formData // Attach FormData with the audio file and API key
                             });
+
 
                             if (response.ok)
                             {
