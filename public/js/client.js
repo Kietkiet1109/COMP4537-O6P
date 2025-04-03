@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () =>
             else if (!data.isAdmin)
                 alert('data.isAdmin is undefined');
 
-            if (data && data.isAdmin)
+            if (data && data.user.isAdmin)
             {
                 // Fetch admin data with headers and query parameters
                 const response = await fetch(`/admin`, 
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () =>
                     return alert(`Failed to fetch admin data: ${ response.statusText }`);                         
             } 
             else            
-                alert('You are not authorized to access this page.');
+                alert(`You are not authorized to access this page. ${JSON.stringify(data)}`);
             
         });
     }
