@@ -70,7 +70,7 @@ router.get('/admin', async (req, res) => {
         console.log("Checking admin status...");
 
         // Call the adminSearch method to get the necessary data
-        const searchData = await AdminController.adminSearch(req, res);
+        const searchData = await makeApiRequest('/currentUser', { method: 'GET', options: {req} });
 
         // Check if the response is valid and contains the necessary data
         if (searchData.success) {
@@ -95,8 +95,6 @@ router.get('/admin', async (req, res) => {
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
-
-
 
 
 
