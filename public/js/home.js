@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios'); // Forward requests to API server
-
-const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
+require("dotenv").config();
 
 // 🔹 Helper function to retrieve JWT token from local storage
 function getAuthHeaders(req)
@@ -23,7 +22,7 @@ function getAuthHeaders(req)
 // {
 //     try
 //     {
-//         const response = await fetch(`${ API_BASE }${ endpoint }`, {
+//         const response = await fetch(`${ process.env.API_BASE }${ endpoint }`, {
 //             ...options,
 //             headers: {
 //                 'Content-Type': 'application/json',
@@ -50,7 +49,7 @@ function getAuthHeaders(req)
 
 async function makeApiRequest(endpoint, options = {}) {
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
+        const response = await fetch(`${process.env.API_BASE}${endpoint}`, {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +84,7 @@ router.get('/home', async (req, res) => {
         console.error("Error rendering home page:", err);
         res.status(500).send("Error rendering home page.");
     }
-    // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
+    // const result = await axios.get(`${process.env.API_BASE}/admin`, { headers: getAuthHeaders(req) });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
 
@@ -98,13 +97,13 @@ router.get('/admin', async (req, res) =>
         console.log("Received query parameters:", params);
 
         // Set CSP Header **ONLY for the Admin Page**
-        res.setHeader("Content-Security-Policy",
-            "default-src 'self'; " +
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
-            "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
-        );
+        // res.setHeader("Content-Security-Policy",
+        //     "default-src 'self'; " +
+        //     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+        //     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+        //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " +
+        //     "img-src 'self' data: blob: https://comp4537-project-5ddxc.ondigitalocean.app;"
+        // );
 
         // Ensure query params are handled safely
         res.render('admin', {
@@ -126,43 +125,10 @@ router.get('/admin', async (req, res) =>
 
 
 
-
-// router.get('/admin', async (req, res) => {
-//     try {
-//         console.log("Checking admin status...");
-
-//         // Call the adminSearch method to get the necessary data
-//         const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {}});
-
-//         // Check if the response is valid and contains the necessary data
-//         if (searchData.success) {
-//             const { username, isAdmin, users, searchResult, searchAttempted, apiStats } = searchData;
-
-//             // Render the admin page with the data returned from adminSearch
-//             res.render('admin', {
-//                 username: username,
-//                 isAdmin: isAdmin,
-//                 users: users,
-//                 searchResult: searchResult,
-//                 searchAttempted: searchAttempted,
-//                 apiStats: apiStats,
-//                 pageId: 'admin-page'
-//             });
-//         } else {
-//             // If the data fetch was unsuccessful, return an error
-//             res.status(500).send("Error fetching admin data.");
-//         }
-//     } catch (err) {
-//        console.error('Admin route failed:', err.message);
-//        res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
-//    }
-//});
-
-
 // 🔹 Admin Search (Protected)
 router.get('/admin/search', async (req, res) => {
     try {
-        const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req), params: { username: req.query.username } });
+        const result = await axios.get(`${process.env.API_BASE}/admin`, { headers: getAuthHeaders(req), params: { username: req.query.username } });
         res.render('admin',
             {
                 username: result.data.username,
@@ -180,7 +146,7 @@ router.get('/admin/search', async (req, res) => {
 // 🔹 Toggle Admin Status (Protected)
 router.post('/admin/toggle-admin', async (req, res) => {
     try {
-        const result = await axios.patch(`${API_BASE}/admin`, req.body, { headers: getAuthHeaders(req) });
+        const result = await axios.patch(`${process.env.API_BASE}/admin`, req.body, { headers: getAuthHeaders(req) });
         res.status(200).json(result.data);
     }
     catch (err) {
@@ -191,7 +157,7 @@ router.post('/admin/toggle-admin', async (req, res) => {
 // 🔹 Delete User (Protected)
 router.delete('/admin/delete-user', async (req, res) => {
     try {
-        const result = await axios.delete(`${ API_BASE }/admin`, { headers: getAuthHeaders(req), data: req.body });
+        const result = await axios.delete(`${ process.env.API_BASE }/admin`, { headers: getAuthHeaders(req), data: req.body });
         res.status(200).json(result.data);
     }
     catch (err) {
@@ -202,7 +168,7 @@ router.delete('/admin/delete-user', async (req, res) => {
 // 🔹 Forgot Password
 router.post('/forgot', async (req, res) => {
     try {
-        const result = await axios.post(`${API_BASE}/forgot`, req.body);
+        const result = await axios.post(`${process.env.API_BASE}/forgot`, req.body);
         res.json(result.data);
     }
     catch (err) {
@@ -218,7 +184,7 @@ router.get('/reset/:token', (req, res) => {
 // 🔹 Login (Stores JWT)
 router.post('/login', async (req, res) => {
     try {
-        const result = await axios.post(`${API_BASE}/login`, req.body);
+        const result = await axios.post(`${process.env.API_BASE}/login`, req.body);
         res.status(200).json(result.data);
     }
     catch (err) {
@@ -229,7 +195,7 @@ router.post('/login', async (req, res) => {
 // 🔹 Signup (Stores JWT)
 router.post('/signup', async (req, res) => {
     try {
-        const result = await axios.post(`${API_BASE}/signup`, req.body);
+        const result = await axios.post(`${process.env.API_BASE}/signup`, req.body);
         res.status(200).json(result.data);
     } 
     catch (err) 
@@ -244,7 +210,7 @@ router.post('/api/v3', async (req, res) => {
         const formData = new FormData();
         formData.append('audioFile', req.file);
 
-        const result = await axios.post(`${API_BASE}/audio`, formData, {
+        const result = await axios.post(`${process.env.API_BASE}/audio`, formData, {
             headers: {
                 ...getAuthHeaders(req), // Attach JWT
                 'Content-Type': 'multipart/form-data',

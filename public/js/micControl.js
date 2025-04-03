@@ -1,3 +1,13 @@
+// Send a command to EV3
+function sendEV3Command(command) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(command);
+        console.log(`Sent to EV3: ${command}`);
+    } else {
+        console.log('WebSocket not connected');
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async function ()
 {
     const recordButton = document.getElementById("recordButton");
@@ -84,6 +94,9 @@ document.addEventListener("DOMContentLoaded", async function ()
                             {
                                 const result = await uploadResponse.json();
                                 document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
+                                setTimeout(() => {
+                                    sendEV3Command(result.transcription);
+                                }, 2000);
                                 alert("WAV uploaded successfully!");
                             } 
                             else
