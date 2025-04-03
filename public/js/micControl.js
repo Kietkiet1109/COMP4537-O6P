@@ -77,10 +77,8 @@ document.addEventListener("DOMContentLoaded", async function ()
                             // Send POST request with Authorization header
                             const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                headers: {
-                                    "Authorization": `Bearer ${ jwtToken }`, // Include JWT token
-                                },
-                                body: formData // Attach FormData with the audio file and API key
+                                headers: { "Authorization": `Bearer ${ jwtToken }`}, // Attach JWT token
+                                body: { formData, "key": user.apiKey }  // Attach FormData with the audio file and API key
                             });
 
 
@@ -89,7 +87,8 @@ document.addEventListener("DOMContentLoaded", async function ()
                                 const result = await response.json();
                                 document.getElementById("result").innerHTML = `Command: ${ result.transcription }`;
                                 alert("WAV uploaded successfully!");
-                            } else
+                            } 
+                            else
                             {
                                 console.error("Failed to upload WAV:", response.status, response.statusText);
                                 alert("WAV upload failed!");
