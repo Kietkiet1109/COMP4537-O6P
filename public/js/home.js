@@ -50,9 +50,16 @@ router.get('/admin', async (req, res) =>
             }
         });
 
+        const api = await axios.get(`${ process.env.API_BASE }/getApiStats`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ params.token }`
+            }
+        });
+
         // Ensure `users` and `apiStats` are arrays before rendering
         const users = Array.isArray(response.data.users) ? response.data.users : [];
-        const apiStats = Array.isArray(response.data.apiStats) ? response.data.apiStats : [];
+        const apiStats = Array.isArray(api.data.apiStats) ? api.data.apiStats : [];
 
         res.render('admin', {
             username: params.username || "Unknown User",
