@@ -83,20 +83,27 @@ async function fetchUserInfoAndInject()
 // });
 
 document.getElementById('adminPanelLink').addEventListener('click', async () => {
-    // Retrieve the JWT token (usually from localStorage, sessionStorage, or cookies)
-    const token = localStorage.getItem('authToken'); // or sessionStorage.getItem('jwtToken') or cookie
+    // Retrieve the JWT token securely
+    const token = localStorage.getItem('jwtToken'); // or sessionStorage.getItem('jwtToken')
 
-    // Send the token in the Authorization header
+    // Make the request with the Authorization header
     const adminData = await apiRequest('/admin', {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${token}`, // Add the JWT token to the Authorization header
+            'Authorization': `Bearer ${token}`,
         }
     });
 
-    // Check if the user has admin privileges
-    if (!adminData || !adminData.isAdmin) {
-        alert('Access Denied. You do not have admin privileges.');
+    // Handling response, securely check if the user is an admin
+    if (adminData.success) {
+        if (adminData.isAdmin) {
+            // Grant access to the admin panel
+            alert('Welcome Admin!');
+        } else {
+            alert('Access Denied. You do not have admin privileges.');
+        }
+    } else {
+        alert('Error: Unable to authenticate.');
     }
 });
 
