@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () =>
                     return alert(`Failed to fetch admin data: ${ response.statusText }`);                         
             } 
             else            
-                alert('You are not authorized to access this page.');
+                alert(`You are not authorized to access this page. ${JSON.stringify(data)}`);
             
         });
     }
