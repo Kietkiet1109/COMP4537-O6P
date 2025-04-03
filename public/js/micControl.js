@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         formData.append("audioFile", blob, "recording.wav");
 
                         try {
-                            const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api", {
+                            const response = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
                                 body: formData
                             });
