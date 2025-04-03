@@ -132,18 +132,18 @@ document.addEventListener('DOMContentLoaded', async () =>
 
             try
             {
-                const response = await fetch(`/admin?${ queryParams }`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/html',
-                        'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-                    }
-                });
+                // const response = await fetch(`/admin?${ queryParams }`, {
+                //     method: 'GET',
+                //     headers: {
+                //         'Content-Type': 'application/html',
+                //         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+                //     }
+                // });
 
-                if (!response.ok)                
-                    alert(`Failed to fetch admin data: ${ response.statusText }`);                
+                // if (!response.ok)                
+                //     alert(`Failed to fetch admin data: ${ response.statusText }`);                
 
-                await response.json();
+                // await response.json();
 
                 // Only navigate AFTER successful fetch
                 window.location.href = `/admin?${ queryParams }`;
