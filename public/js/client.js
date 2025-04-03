@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () =>
                     }
                 });    
                 if (!response.ok)                
-                    return alert(`Failed to fetch admin data: ${ response.statusText }`);                         
+                    return alert(`Failed to fetch admin data: ${ response.statusText } : ${ JSON.stringify(response) }`);                         
             } 
             else            
                 alert(`You are not authorized to access this page. ${JSON.stringify(data)}`);
