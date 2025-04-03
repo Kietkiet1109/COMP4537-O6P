@@ -148,7 +148,11 @@ document.addEventListener('DOMContentLoaded', async () =>
                 // Only navigate AFTER successful fetch
                 window.location.href = `/admin?${ queryParams }`;
             } 
-            catch (err){ alert(`Error fetching admin data: ${ err.message}`); }
+            catch (err)
+            { 
+                console.log('Error fetching admin data:', err);
+                alert(`Error fetching admin data: ${ err.message}`); 
+            }
         });
     }
 
