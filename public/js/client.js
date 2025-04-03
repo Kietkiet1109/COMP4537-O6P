@@ -106,7 +106,7 @@ async function fetchUserInfoAndInject()
 document.getElementById('adminPanelLink').addEventListener('click', async (event) =>
 {
     event.preventDefault();
-    const adminData = await fetchAdminData();
+    // const adminData = await fetchAdminData();
     if (adminData && adminData.isAdmin)
     {
         window.location.href = '/admin';
