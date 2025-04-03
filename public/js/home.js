@@ -83,7 +83,7 @@ router.get('/admin/search', async (req, res) => {
             {
                 username: result.data.username,
                 isAdmin: result.data.isAdmin,
-                users: result.data.users,
+                users: result.users ? JSON.stringify(result.users) : JSON.stringify(result.data.users),
                 searchResult: result.data.users.length > 0 ? result.data.users[0] : null,
                 searchAttempted: true
             });
