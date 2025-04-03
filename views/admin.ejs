@@ -78,17 +78,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const makeAdmin = this.getAttribute('data-admin') === 'true';
 
             fetch('/admin/toggle-admin', {
-<<<<<<< HEAD
-                method: 'POST',
-                headers: 
-                { 
-                    'Content-Type': 'application/json', 
-                    "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
-                },
-=======
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${ localStorage.getItem("authToken") }`, },
->>>>>>> deb6b7fff37b25e431efe7d7f3285655df94343f
                 body: JSON.stringify({ userId, makeAdmin })
             }).then(response => response.json())
               .then(data => {
