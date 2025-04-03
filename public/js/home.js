@@ -94,12 +94,10 @@ router.get('/admin', async (req, res) =>
     try
     {
         console.log("Checking admin status...");
-
-        // Extract query parameters safely
         const params = req.query;
         console.log("Received query parameters:", params);
 
-        // Set CSP Header **before** rendering the page
+        // Set CSP Header **ONLY for the Admin Page**
         res.setHeader("Content-Security-Policy",
             "default-src 'self'; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
@@ -111,18 +109,19 @@ router.get('/admin', async (req, res) =>
         // Ensure query params are handled safely
         res.render('admin', {
             username: params.username || "Unknown User",
-            isAdmin: params.isAdmin === "true", // Convert to boolean safely
-            users: params.users ? (Array.isArray(params.users) ? params.users : JSON.parse(params.users)) : [],
-            apiStats: params.apiStats ? (Array.isArray(params.apiStats) ? params.apiStats : JSON.parse(params.apiStats)) : [],
+            isAdmin: params.isAdmin === "true",
+            users: params.users ? JSON.parse(params.users) : [],
+            apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
             pageId: 'admin-page'
         });
 
     } catch (err)
     {
-        console.error('Admin route failed:', err.message);
+        console.error("Admin route failed:", err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 
 
 

@@ -99,34 +99,39 @@ document.addEventListener('DOMContentLoaded', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
 
-            if (!data)            
-                alert('data is undefined');
-
-            if (!data.user.isAdmin)            
-                alert('You are not authorized to access this page.');
-
-            // Fetch admin data using POST (since GET cannot have a body)
+            if (!data) return alert('data is undefined');
+            if (!data.user.isAdmin) return alert('You are not authorized to access this page.');
 
             const queryParams = new URLSearchParams({
                 username: data.user.username,
                 isAdmin: data.user.isAdmin
             }).toString();
 
-            window.location.href = `/admin?${ queryParams }`;
-            // const response = await fetch(`/admin?${ queryParams }`, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-            //     }
-            // });
+            try
+            {
+                const response = await fetch(`/admin?${ queryParams }`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
+                    }
+                });
 
-            if (!response.ok)
-                return alert(`Failed to fetch admin data: ${ response.statusText }`);
+                if (!response.ok)
+                {
+                    throw new Error(`Failed to fetch admin data: ${ response.statusText }`);
+                }
 
-            const result = await response.json();
-            console.log(result);
+                const result = await response.json();
+                console.log('Admin Data:', result);
 
+                // Only navigate AFTER successful fetch
+                window.location.href = `/admin?${ queryParams }`;
+            } catch (err)
+            {
+                console.error('Error accessing admin panel:', err.message);
+                alert('Error fetching admin data.');
+            }
         });
     }
 
