@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () =>
     {
         adminButton.addEventListener('click', async () =>
         {
-            const data = await apiRequest('/admin', { method: 'GET' });
+            const data = await apiRequest('/currantUser', { method: 'GET' });
             if (data && data.isAdmin)
                 window.location.href = '/admin';
             else
