@@ -107,8 +107,7 @@ function connectToEV3() {
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const pageId = document.body.id;
-    // if (pageId === 'home-page' || pageId === 'admin-page')
-        if (pageId === 'home-page')
+    if (pageId === 'home-page' || pageId === 'admin-page')
     {
         await fetchUserInfoAndInject();
     }
@@ -120,8 +119,11 @@ document.addEventListener('DOMContentLoaded', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
 
-            if (!data) return alert('data is undefined');
-            if (!data.user.isAdmin) return alert('You are not authorized to access this page.');
+            if (!data) 
+                return alert('data is undefined');
+
+            if (!data.user.isAdmin) 
+                return alert('You are not authorized to access this page.');
 
             const queryParams = new URLSearchParams({
                 username: data.user.username,
@@ -133,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () =>
                 const response = await fetch(`/admin?${ queryParams }`, {
                     method: 'GET',
                     headers: {
+                        'Content-Type': 'application/html',
                         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
                     }
                 });
