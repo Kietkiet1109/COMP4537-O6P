@@ -98,6 +98,11 @@ document.addEventListener('DOMContentLoaded', async () =>
         {
             const data = await apiRequest('/currentUser', { method: 'GET' });
 
+            if (!data)
+                alert('data is undefined');
+            else if (!data.isAdmin)
+                alert('data.isAdmin is undefined');
+
             if (data && data.isAdmin)
             {
                 // Fetch admin data with headers and query parameters
