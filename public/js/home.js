@@ -97,7 +97,7 @@ router.get('/admin', async (req, res) => {
         const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {req}});
 
         // Check if the response is valid and contains the necessary data
-        // if (searchData.success) {
+        if (searchData.success) {
             const { username, isAdmin, users, searchResult, searchAttempted, apiStats } = searchData;
 
             // Render the admin page with the data returned from adminSearch
@@ -110,10 +110,10 @@ router.get('/admin', async (req, res) => {
                 apiStats: apiStats,
                 pageId: 'admin-page'
             });
-        // } else {
-        //     // If the data fetch was unsuccessful, return an error
-        //     res.status(500).send("Error fetching admin data.");
-        // }
+        } else {
+            // If the data fetch was unsuccessful, return an error
+            res.status(500).send("Error fetching admin data.");
+        }
     } catch (err) {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
