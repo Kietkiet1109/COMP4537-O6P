@@ -24,7 +24,6 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', async (req, res) => {
-    console.log("Am I an admin: ");
     res.render('home', { pageId: 'home-page', isAdmin: false });
     // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
@@ -56,7 +55,9 @@ router.get('/admin/search', async (req, res) => {
             {
                 username: result.data.username,
                 isAdmin: result.data.isAdmin,
-                users: result.data.users
+                users: result.data.users,
+                searchResult: result.data.users.length > 0 ? result.data.users[0] : null,
+                searchAttempted: true
             });
     }
     catch (err) {
