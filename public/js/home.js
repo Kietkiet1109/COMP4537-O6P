@@ -26,7 +26,12 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', async (req, res) => {
-    res.render('home', { pageId: 'home-page', isAdmin: false });
+    try {
+        res.render('home', { pageId: 'home-page', isAdmin: false });
+    } catch (err) {
+        console.error("Error rendering home page:", err);
+        res.status(500).send("Error rendering home page.");
+    }
     // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders(req) });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
 });
