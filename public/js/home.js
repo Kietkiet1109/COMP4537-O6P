@@ -5,14 +5,16 @@ const axios = require('axios'); // Forward requests to API server
 const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
 
 // 🔹 Helper function to retrieve JWT token from local storage
-function getAuthHeaders()
+function getAuthHeaders(req)
 {
-    const token = localStorage.getItem('authToken'); // Ensure token exists
+    // Extract JWT token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1]; // Format: "Bearer <token>"
     if (!token)    
-        return console.error("JWT token not found in localStorage.");
+        return console.error("Authorization token is missing in the request headers.");
     
     return { Authorization: `Bearer ${ token }` };
 }
+
 
 // 🔹 Landing Page
 router.get('/', (req, res) => {
