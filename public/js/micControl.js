@@ -58,27 +58,26 @@ document.addEventListener("DOMContentLoaded", async function ()
                         if (!response.ok)                        
                             return alert("Unable to fetch user data.");                        
 
-                        const user = await response.json();
-
+                        const res = await response.json();
+                        console.log("User data:", res);
                         // Upload WAV to the server
                         const formData = new FormData();
                         formData.append("audioFile", blob, "recording.wav");
-                        formData.append("apiKey", user.apiKey); // Add API key to the request body
+                        formData.append("apiKey", res.user.apiKey); // Add API key to the request body
 
                         try
                         {
                             const jwtToken = localStorage.getItem("authToken");
                             if (!jwtToken)
                             {
-                                alert("You are not logged in. Redirecting to login...");
                                 window.location.href = "/";
-                                return;
+                                return alert("You are not logged in. Redirecting to login...");
                             }
-                            
+
                             const uploadResponse = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
-                                headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`},
-                                body: formData// Include API key in the request body
+                                headers: { "Authorization": `Bearer ${ jwtToken }`},
+                                body: formData // Include API key in the request body
                             });
 
                             if (uploadResponse.ok)
