@@ -19,6 +19,59 @@ function getAuthHeaders(req)
     return { Authorization: `Bearer ${ token }` };
 }
 
+// async function makeApiRequest(endpoint, options = {})
+// {
+//     try
+//     {
+//         const response = await fetch(`${ API_BASE }${ endpoint }`, {
+//             ...options,
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
+//                 ...options.headers
+//             }
+//         });
+
+//         const data = await response.json();
+
+//         if (!response.ok)
+//         {
+//             throw new Error(data.message || 'API request failed');
+//         }
+
+//         return data;
+//     } catch (err)
+//     {
+//         console.error(`API request failed (${ endpoint }):`, err.message);
+//         // alert(err.message || 'An unexpected error occurred. Please try again.');
+//         return null;
+//     }
+// }
+
+async function makeApiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${ localStorage.getItem("authToken") }`,
+                ...options.headers
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'API request failed');
+        }
+
+        return data;
+    } catch (err) {
+        console.error(`API request failed (${endpoint}):`, err.message);
+        return { success: false, message: err.message };  // Return a default object with failure status
+    }
+}
+
 // 🔹 Landing Page
 router.get('/', (req, res) => {
     res.render('index');
@@ -54,12 +107,43 @@ router.get('/admin', async (req, res) =>
             apiStats: params.apiStats || [],
             pageId: 'admin-page'
         });
-    } catch (err)
+    } 
+    catch (err)
     {
         console.error('Admin route failed:', err.message);
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+// router.get('/admin', async (req, res) => {
+//     try {
+//         console.log("Checking admin status...");
+
+//         // Call the adminSearch method to get the necessary data
+//         const searchData = await makeApiRequest('/adminSearch', { method: 'GET', options: {}});
+
+//         // Check if the response is valid and contains the necessary data
+//         if (searchData.success) {
+//             const { username, isAdmin, users, searchResult, searchAttempted, apiStats } = searchData;
+
+//             // Render the admin page with the data returned from adminSearch
+//             res.render('admin', {
+//                 username: username,
+//                 isAdmin: isAdmin,
+//                 users: users,
+//                 searchResult: searchResult,
+//                 searchAttempted: searchAttempted,
+//                 apiStats: apiStats,
+//                 pageId: 'admin-page'
+//             });
+//         } else {
+//             // If the data fetch was unsuccessful, return an error
+//             res.status(500).send("Error fetching admin data.");
+//         }
+//     } catch (err) {
+//        console.error('Admin route failed:', err.message);
+//        res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
+//    }
+//});
 
 
 // 🔹 Admin Search (Protected)

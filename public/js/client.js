@@ -85,7 +85,8 @@ async function fetchUserInfoAndInject()
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const pageId = document.body.id;
-    if (pageId === 'home-page' || pageId === 'admin-page')
+    // if (pageId === 'home-page' || pageId === 'admin-page')
+        if (pageId === 'home-page')
     {
         await fetchUserInfoAndInject();
     }
