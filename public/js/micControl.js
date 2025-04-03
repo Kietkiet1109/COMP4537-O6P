@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async function ()
                             const uploadResponse = await fetch("https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3", {
                                 method: "POST",
                                 headers: { "Authorization": `Bearer ${ localStorage.getItem("authToken") }`},
-                                body: { ...formData, key: user.apiKey } // Include API key in the request body
+                                body: { formData, key: user.apiKey } // Include API key in the request body
                             });
 
                             if (uploadResponse.ok)
