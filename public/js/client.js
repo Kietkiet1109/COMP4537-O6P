@@ -97,12 +97,6 @@ function connectToEV3() {
     };
 }
 
-// document.getElementById('adminPanelLink').addEventListener('click', async () =>
-// {
-//     const adminData = await apiRequest('/admin', { method: 'GET' });;
-//     if (!adminData || !adminData.isAdmin)
-//         alert('Access Denied. You do not have admin privileges.');    
-// });
 
 document.addEventListener('DOMContentLoaded', async () =>
 {
@@ -125,8 +119,6 @@ document.addEventListener('DOMContentLoaded', async () =>
             if (!data.user.isAdmin) 
                 return alert('You are not authorized to access this page.');
 
-            
-
             try
             {
                 const users = await apiRequest('/getUsers', { method: 'GET' });             
@@ -135,8 +127,8 @@ document.addEventListener('DOMContentLoaded', async () =>
                 const queryParams = new URLSearchParams({
                     username: data.user.username,
                     isAdmin: data.user.isAdmin,
-                    users: users,
-                    apiStats: stats,
+                    users: JSON.stringify({ users }).users,
+                    apiStats: JSON.stringify({ stats }).apiStats,
                 }).toString();
 
                 // Only navigate AFTER successful fetch
