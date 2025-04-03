@@ -112,26 +112,19 @@ document.addEventListener('DOMContentLoaded', async () =>
                 const response = await fetch(`/admin?${ queryParams }`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
                     }
                 });
 
-                if (!response.ok)
-                {
-                    throw new Error(`Failed to fetch admin data: ${ response.statusText }`);
-                }
+                if (!response.ok)                
+                    alert(`Failed to fetch admin data: ${ response.statusText }`);                
 
-                const result = await response.json();
-                console.log('Admin Data:', result);
+                await response.json();
 
                 // Only navigate AFTER successful fetch
                 window.location.href = `/admin?${ queryParams }`;
-            } catch (err)
-            {
-                console.error('Error accessing admin panel:', err.message);
-                alert('Error fetching admin data.');
-            }
+            } 
+            catch (err){ alert(`Error fetching admin data: ${ err.message}`); }
         });
     }
 
