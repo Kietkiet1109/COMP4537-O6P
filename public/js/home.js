@@ -24,6 +24,7 @@ router.get('/', (req, res) => {
 
 // 🔹 Home Page
 router.get('/home', async (req, res) => {
+    console.log("Am I an admin: ");
     res.render('home', { pageId: 'home-page', isAdmin: false });
     // const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
     // res.render('home', { pageId: 'home-page', isAdmin: result.data.isAdmin });
@@ -33,6 +34,7 @@ router.get('/home', async (req, res) => {
 router.get('/admin', async (req, res) => {
     try {
         const result = await axios.get(`${API_BASE}/admin`, { headers: getAuthHeaders() });
+        console.log("Am I an admin: " + result.data.isAdmin);
         res.render('admin', {
             username: result.data.username,
             isAdmin: result.data.isAdmin,
