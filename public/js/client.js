@@ -103,20 +103,6 @@ async function fetchUserInfoAndInject()
     }
 }
 
-document.getElementById('adminPanelLink').addEventListener('click', async (event) =>
-{
-    event.preventDefault();
-    // const adminData = await fetchAdminData();
-    if (adminData && adminData.isAdmin)
-    {
-        window.location.href = '/admin';
-    } else
-    {
-        alert('Access Denied. You do not have admin privileges.');
-    }
-});
-
-
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const pageId = document.body.id;
