@@ -108,11 +108,11 @@ router.get('/admin', async (req, res) =>
         // Ensure query params are handled safely
         res.render('admin', {
             username: params.username || "Unknown User",
-            isAdmin: params.isAdmin === "true",
+            isAdmin: params.isAdmin,
             users: params.users ? JSON.parse(params.users) : [],
             apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
             searchResult: null,
-            searchAttempted: true,
+            searchAttempted: false,
             pageId: 'admin-page'
         });
 

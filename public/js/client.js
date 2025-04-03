@@ -125,25 +125,19 @@ document.addEventListener('DOMContentLoaded', async () =>
             if (!data.user.isAdmin) 
                 return alert('You are not authorized to access this page.');
 
-            const queryParams = new URLSearchParams({
-                username: data.user.username,
-                isAdmin: data.user.isAdmin
-            }).toString();
+            
 
             try
             {
-                // const response = await fetch(`/admin?${ queryParams }`, {
-                //     method: 'GET',
-                //     headers: {
-                //         'Content-Type': 'application/html',
-                //         'Authorization': `Bearer ${ localStorage.getItem('authToken') }`
-                //     }
-                // });
+                const users = await apiRequest('/getUsers', { method: 'GET' });             
+                const stats = await apiRequest('/getStats', { method: 'GET' });    
 
-                // if (!response.ok)                
-                //     alert(`Failed to fetch admin data: ${ response.statusText }`);                
-
-                // await response.json();
+                const queryParams = new URLSearchParams({
+                    username: data.user.username,
+                    isAdmin: data.user.isAdmin,
+                    users: await users.json(),
+                    apiStats: await stats.json(),
+                }).toString();
 
                 // Only navigate AFTER successful fetch
                 window.location.href = `/admin?${ queryParams }`;
