@@ -90,18 +90,18 @@ document.addEventListener('DOMContentLoaded', async () =>
         await fetchUserInfoAndInject();
     }
 
-    const adminButton = document.getElementById('adminPanelLink');
-    if (adminButton)
-    {
-        adminButton.addEventListener('click', async () =>
-        {
-            const data = await apiRequest('/currentUser', { method: 'GET' });
-            if (data && data.isAdmin)
-                window.location.href = '/admin';
-            else
-                alert('You are not authorized to access this page.');
-        });
-    }
+    // const adminButton = document.getElementById('adminPanelLink');
+    // if (adminButton)
+    // {
+    //     adminButton.addEventListener('click', async () =>
+    //     {
+    //         const data = await apiRequest('/currentUser', { method: 'GET' });
+    //         if (data && data.isAdmin)
+    //             window.location.href = '/admin';
+    //         else
+    //             alert('You are not authorized to access this page.');
+    //     });
+    // }
 
     // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
