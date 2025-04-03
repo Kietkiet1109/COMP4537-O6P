@@ -7,14 +7,17 @@ const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3
 // 🔹 Helper function to retrieve JWT token from local storage
 function getAuthHeaders(req)
 {
-    // Extract JWT token from the Authorization header
-    const token = req.headers.authorization?.split(" ")[1]; // Format: "Bearer <token>"
-    if (!token)    
-        return console.error("Authorization token is missing in the request headers.");
-    
+    const authHeader = req.headers.authorization; // Access authorization header
+    if (!authHeader || !authHeader.startsWith("Bearer "))
+    {
+        console.error("Authorization token is missing or malformed:", authHeader);
+        return {}; // Return empty headers to prevent errors
+    }
+
+    const token = authHeader.split(" ")[1];
+    console.log("Extracted JWT token:", token); // Debugging log
     return { Authorization: `Bearer ${ token }` };
 }
-
 
 // 🔹 Landing Page
 router.get('/', (req, res) => {

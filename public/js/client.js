@@ -1,273 +1,243 @@
-/**
- * Event listener for DOMContentLoaded.
- * Initializes various modal instances and handles form submissions and button clicks.
- */
 const API_BASE = 'https://exo-engine.com/COMP4537/TermProject/LegoControl/api/v3';
 
-async function fetchUserInfoAndInject() {
-    try {
-        const token = localStorage.getItem('authToken');
-        const res = await fetch(`${API_BASE}/currentUser`, {
-            method: 'GET',
+/**
+ * Reusable API request function.
+ * Handles common headers, logging, and error handling.
+ */
+async function apiRequest(endpoint, options = {})
+{
+    try
+    {
+        const response = await fetch(`${ API_BASE }${ endpoint }`, {
+            ...options,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${ localStorage.getItem('authToken') }`,
+                ...options.headers
             }
         });
 
-        const data = await res.json();
-        console.log('[fetchUserInfoAndInject] API response:', data);
+        const data = await response.json();
 
-        // if (!data.success || !data.user) {
-        //     console.warn('Not authenticated');
-        //     window.location.href = '/';
-        //     return;
-        // }
-
-        const { username, isAdmin } = data.user;
-
-        // 🔹 Update welcome message
-        const welcomeText = document.getElementById('welcomeText');
-        if (welcomeText) {
-            welcomeText.textContent = `Welcome, ${isAdmin ? 'Admin ' : ''}${username}!`;
+        if (!response.ok)
+        {
+            throw new Error(data.message || 'API request failed');
         }
 
-        // 🔹 Show admin panel link if user is admin
-        const adminLink = document.getElementById('adminPanelLink');
-        if (adminLink && isAdmin) {
-            adminLink.style.display = 'inline-block';
-        }
-
-        // 🔹 Protect admin-only content
-        const adminPanelContainer = document.querySelector('.admin-container');
-        if (adminPanelContainer && !isAdmin) {
-            document.body.innerHTML = `
-                <div class="text-center mt-5">
-                    <h2>Access Denied</h2>
-                    <p>You are not an admin.</p>
-                </div>
-            `;
-        }
-
-    } catch (err) {
-        console.error("Auth check failed:", err);
-        // window.location.href = '/'; // Fallback
+        return data;
+    } catch (err)
+    {
+        console.error(`API request failed (${ endpoint }):`, err.message);
+        alert(err.message || 'An unexpected error occurred. Please try again.');
+        return null;
     }
 }
 
-
-document.addEventListener('DOMContentLoaded', function () {
-    const pageId = document.body.id;
-    if (pageId === 'home-page' || pageId === 'admin-page') {
-        fetchUserInfoAndInject();
+/**
+ * Fetch user info and update DOM elements.
+ */
+async function fetchUserInfoAndInject()
+{
+    const data = await apiRequest('/currentUser', { method: 'GET' });
+    if (!data || !data.user)
+    {
+        console.warn('Not authenticated');
+        window.location.href = '/';
+        return;
     }
 
-    let enterEmailModalInstance;
-    let successModalInstance;
-    let loginFailedModalInstance;
+    const { username, isAdmin } = data.user;
 
+    // Update welcome message
+    const welcomeText = document.getElementById('welcomeText');
+    if (welcomeText)
+    {
+        welcomeText.textContent = `Welcome, ${ isAdmin ? 'Admin ' : '' }${ username }!`;
+    }
+
+    // Show admin panel link if user is admin
+    const adminLink = document.getElementById('adminPanelLink');
+    if (adminLink && isAdmin)
+    {
+        adminLink.style.display = 'inline-block';
+    }
+
+    // Protect admin-only content
+    const adminPanelContainer = document.querySelector('.admin-container');
+    if (adminPanelContainer && !isAdmin)
+    {
+        document.body.innerHTML = `
+            <div class="text-center mt-5">
+                <h2>Access Denied</h2>
+                <p>You are not an admin.</p>
+            </div>
+        `;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () =>
+{
+    const pageId = document.body.id;
+    if (pageId === 'home-page' || pageId === 'admin-page')
+    {
+        await fetchUserInfoAndInject();
+    }
+
+    // Handle forgot password modal
     const forgotPasswordButton = document.getElementById('forgotPasswordLink');
-    const enterEmailForm = document.getElementById('enter-email-form');
-    const successButton = document.getElementById('successButton');
-
-    // Show enter email modal
-    if (forgotPasswordButton) {
-        forgotPasswordButton.addEventListener('click', function (event) {
+    if (forgotPasswordButton)
+    {
+        forgotPasswordButton.addEventListener('click', (event) =>
+        {
             event.preventDefault();
-            if (!enterEmailModalInstance) {
-                enterEmailModalInstance = new bootstrap.Modal(document.getElementById('enterEmailModal'));
-            }
-            enterEmailModalInstance.show();
+            const modalInstance = new bootstrap.Modal(document.getElementById('enterEmailModal'));
+            modalInstance.show();
         });
     }
 
     // Handle enter email form submission
-    if (enterEmailForm) {
-        enterEmailForm.addEventListener('submit', async function (event) {
+    const enterEmailForm = document.getElementById('enter-email-form');
+    if (enterEmailForm)
+    {
+        enterEmailForm.addEventListener('submit', async (event) =>
+        {
             event.preventDefault();
             const email = document.getElementById('enter-email').value;
-            if (email) {
-                try {
-                    const response = await fetch(`${API_BASE}/forgot`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ email })
-                    });
+            if (email)
+            {
+                const data = await apiRequest('/forgot', {
+                    method: 'POST',
+                    body: JSON.stringify({ email })
+                });
 
-                    const data = await response.json();
-                    if (data.success) {
-                        if (!successModalInstance) {
-                            successModalInstance = new bootstrap.Modal(document.getElementById('modalForgot'));
-                        }
-                        enterEmailModalInstance.hide();
-                        successModalInstance.show();
-                    } else {
-                        alert(data.message || 'Failed to send reset email. Please try again.');
-                    }
-                } catch (error) {
-                    alert('Failed to send reset email. Please try again.');
+                if (data && data.success)
+                {
+                    const modalInstance = new bootstrap.Modal(document.getElementById('modalForgot'));
+                    modalInstance.show();
+                } else
+                {
+                    alert(data?.message || 'Failed to send reset email.');
                 }
-            }
-        });
-    }
-
-    // Handle success modal close button
-    if (successButton) {
-        successButton.addEventListener('click', function () {
-            if (successModalInstance) {
-                successModalInstance.hide();
             }
         });
     }
 
     // Handle login form submission
     const loginForm = document.querySelector('form[action="/login"]');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function (event) {
+    if (loginForm)
+    {
+        loginForm.addEventListener('submit', async (event) =>
+        {
             event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = {
-                identifier: formData.get('identifier'),
-                password: formData.get('password')
-            };
-            try {
-                const response = await fetch(`${API_BASE}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(data)
-                });
-                const errorData = await response.json();
-                if (response.ok && errorData.token) {
-                    localStorage.setItem('authToken', errorData.token);
-                    window.location.href = '/home';
-                } else {
-                    const errorMessageHeader = document.getElementById('errorMessageH');
-                    const errorMessageBody = document.getElementById('errorMessageB');
-                    if (!loginFailedModalInstance) {
-                        loginFailedModalInstance = new bootstrap.Modal(document.getElementById('modalLoginFailed'));
-                    }
-                    errorMessageHeader.textContent = errorData.message.charAt(0).toUpperCase() + errorData.message.slice(1);
-                    errorMessageBody.textContent = errorData.message;
-                    loginFailedModalInstance.show();
-                }
-            } catch (err) {
-                alert('Login failed. Please try again.');
+            const formData = new FormData(event.target);
+
+            const data = await apiRequest('/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    identifier: formData.get('identifier'),
+                    password: formData.get('password')
+                })
+            });
+
+            if (data && data.token)
+            {
+                localStorage.setItem('authToken', data.token);
+                window.location.href = '/home';
+            } else
+            {
+                const modalInstance = new bootstrap.Modal(document.getElementById('modalLoginFailed'));
+                document.getElementById('errorMessageH').textContent = data?.message || 'Login failed';
+                modalInstance.show();
             }
         });
     }
 
     // Handle reset password form submission
     const resetPasswordForm = document.getElementById('resetPasswordForm');
-    if (resetPasswordForm) {
-        resetPasswordForm.addEventListener('submit', async function (event) {
+    if (resetPasswordForm)
+    {
+        resetPasswordForm.addEventListener('submit', async (event) =>
+        {
             event.preventDefault();
 
             const form = event.target;
             const password = form.password.value;
             const confirmPassword = form.confirmPassword.value;
 
-            // Extract token from the current URL
+            if (password !== confirmPassword)
+            {
+                alert('Passwords do not match.');
+                return;
+            }
+
             const token = window.location.pathname.split('/').pop();
 
-            try {
-                const response = await fetch(`${API_BASE}/reset/${token}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ password, confirmPassword })
-                });
+            const data = await apiRequest(`/reset/${ token }`, {
+                method: 'POST',
+                body: JSON.stringify({ password, confirmPassword })
+            });
 
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    const modalElement = document.getElementById('modalTour');
-                    if (modalElement) {
-                        const modal = new bootstrap.Modal(modalElement);
-                        modal.show();
-                    }
-                } else {
-                    alert(result.message || 'Password reset failed.');
-                }
-            } catch (err) {
-                console.error('Reset error:', err);
-                alert('Password reset failed. Please try again.');
+            if (data && data.success)
+            {
+                const modalInstance = new bootstrap.Modal(document.getElementById('modalTour'));
+                modalInstance.show();
+            } else
+            {
+                alert(data?.message || 'Password reset failed.');
             }
         });
     }
 
-    // Handle modal button click
-    const modalButton = document.getElementById('modalButton');
-    if (modalButton) {
-        modalButton.addEventListener('click', function () {
-            window.location.href = '/';
-        });
-    }
-
-    // Handle user already exists modal
+    // Handle user signup
     const signupForm = document.getElementById('signup-form');
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function (event) {
+    if (signupForm)
+    {
+        signupForm.addEventListener('submit', async (event) =>
+        {
             event.preventDefault();
-            const formData = new FormData(this);
+            const formData = new FormData(event.target);
+
             const jsonData = {};
-            formData.forEach((value, key) => {
+            formData.forEach((value, key) =>
+            {
                 jsonData[key] = value;
             });
-            try {
-                const response = await fetch(`${API_BASE}/signup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(jsonData)
-                });
 
-                const data = await response.json();
+            const data = await apiRequest('/signup', {
+                method: 'POST',
+                body: JSON.stringify(jsonData)
+            });
 
-                if (data.success && data.token) {
-                    localStorage.setItem('authToken', data.token);
-                    window.location.href = "/home";
-                } else if (data.message === "User already exists.") {
-                    $('#modalUserExists').modal('show');
-                } else {
-                    alert(data.message || 'Signup failed. Please try again.');
-                }
-            } catch (err) {
-                alert('Signup request failed.');
+            if (data && data.success && data.token)
+            {
+                localStorage.setItem('authToken', data.token);
+                window.location.href = '/home';
+            } else if (data?.message === 'User already exists.')
+            {
+                const modalInstance = new bootstrap.Modal(document.getElementById('modalUserExists'));
+                modalInstance.show();
+            } else
+            {
+                alert(data?.message || 'Signup failed.');
             }
         });
     }
 });
 
-/**
- * Sets a flag in localStorage to refresh the page and navigates back in browser history.
- */
-function goBack() {
-    localStorage.setItem('refresh', 'true');
-    window.history.back();
-}
-
-/**
- * Event listener for window load.
- * Reloads the page if the refresh flag is set in localStorage.
- */
-window.onload = function () {
-    if (localStorage.getItem('refresh') === 'true') {
+// Prevent unnecessary page reloads
+window.onload = () =>
+{
+    if (localStorage.getItem('refresh') === 'true')
+    {
         localStorage.removeItem('refresh');
         location.reload();
     }
-}
+};
 
-/**
- * Event listener for page show.
- * Reloads the page if it was loaded from the cache.
- * 
- * @param {PageTransitionEvent} event - The event object.
- */
-window.onpageshow = function (event) {
-    if (event.persisted) {
+window.onpageshow = (event) =>
+{
+    if (event.persisted)
+    {
         window.location.reload();
     }
 };
-
