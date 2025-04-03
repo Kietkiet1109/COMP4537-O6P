@@ -95,15 +95,15 @@ router.get('/admin', async (req, res) =>
     try
     {
         console.log("Checking admin status...");
-        const data = await makeApiRequest('/admin', { method: 'GET', options: {} });
-        
-        const { username, isAdmin, users, apiStats } = data;
+
+        // Extract query parameters from the request
+        const params = req.query; // Change from req.body to req.query
 
         res.render('admin', {
-            username,
-            isAdmin,
-            users: users || [], // Default to empty array
-            apiStats: apiStats || [],
+            username: params.username,
+            isAdmin: params.isAdmin === 'true', // Convert to boolean if needed
+            users: params.users ? JSON.parse(params.users) : [], // Parse JSON if needed
+            apiStats: params.apiStats ? JSON.parse(params.apiStats) : [],
             pageId: 'admin-page'
         });
     }
@@ -113,6 +113,7 @@ router.get('/admin', async (req, res) =>
         res.status(err.response?.status || 500).send(`Access Denied: ${ err.message }`);
     }
 });
+
 
 // router.get('/admin', async (req, res) => {
 //     try {
