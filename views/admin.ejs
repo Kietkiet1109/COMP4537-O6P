@@ -19,49 +19,30 @@
                 <th>Email</th>
                 <th>Admin Status</th>
                 <th>API Calls Left</th>
+                <th>Total API Calls</th>
                 <th>Delete</th>
             </tr>
         </thead>
         <tbody id="userList">
-            <% if (searchResult) { %>
+            <% users.forEach(user => { %>
                 <tr class="user-row">
                     <td>
-                        <% if (searchResult.isAdmin) { %>
-                            <button class="btn btn-warning toggle-admin" data-id="<%= searchResult._id %>" data-admin="false">Make User</button>
+                        <% if (user.isAdmin) { %>
+                            <button class="btn btn-warning toggle-admin" data-id="<%= user._id %>" data-admin="false">Make User</button>
                         <% } else { %>
-                            <button class="btn btn-success toggle-admin" data-id="<%= searchResult._id %>" data-admin="true">Make Admin</button>
+                            <button class="btn btn-success toggle-admin" data-id="<%= user._id %>" data-admin="true">Make Admin</button>
                         <% } %>
                     </td>
-                    <td><%= searchResult.username %></td>
-                    <td><%= searchResult.email %></td>
-                    <td><%= searchResult.isAdmin ? "Yes" : "No" %></td>
-                    <td><%= searchResult.apiCallsLeft%></td>
+                    <td><%= user.username %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.isAdmin ? "Yes" : "No" %></td>
+                    <td><%= user.apiUsage ? user.apiUsage.apiCallsLeft : 'N/A' %></td>
+                    <td><%= user.apiUsage ? user.apiUsage.totalRequests : 'N/A' %></td>
                     <td>
-                        <button class="btn btn-danger delete-user" data-id="<%= searchResult._id %>">Delete</button>
+                        <button class="btn btn-danger delete-user" data-id="<%= user._id %>">Delete</button>
                     </td>
                 </tr>
-            <% } else if (searchAttempted) { %>
-                <tr><td colspan="5">No user found matching your search criteria.</td></tr>
-            <% } else { %>
-                <% users.forEach(user => { %>
-                    <tr class="user-row">
-                        <td>
-                            <% if (user.isAdmin) { %>
-                                <button class="btn btn-warning toggle-admin" data-id="<%= user._id %>" data-admin="false">Make User</button>
-                            <% } else { %>
-                                <button class="btn btn-success toggle-admin" data-id="<%= user._id %>" data-admin="true">Make Admin</button>
-                            <% } %>
-                        </td>
-                        <td><%= user.username %></td>
-                        <td><%= user.email %></td>
-                        <td><%= user.isAdmin ? "Yes" : "No" %></td>
-                        <td><%= user.apiCallsLeft%></td>
-                        <td>
-                            <button class="btn btn-danger delete-user" data-id="<%= user._id %>">Delete</button>
-                        </td>
-                    </tr>
-                <% }); %>
-            <% } %>
+            <% }); %>
         </tbody>
     </table>
 
